@@ -1,0 +1,105 @@
+# Dependencies
+node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Next.js and builds
+.next/
+.next-e2e/
+out/
+dist/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# Tests and coverage
+coverage/
+playwright-report/
+test-results/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Caches and temporary files
+.cache/
+.eslintcache
+.parcel-cache/
+.turbo/
+.tmp/
+tmp/
+temp/
+*.tmp
+
+# Prisma / local databases
+*.db
+*.db-journal
+prisma/dev.db*
+apps/backend/src/generated/prisma/
+
+# Docker local overrides and volumes
+compose.override.yaml
+docker-compose.override.yml
+.docker-data/
+
+# Editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Operating systems
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Local diagnostics, backups and temporary exports
+.tmp-local/
+backups/
+copilot_exports/
+
+# Local phase reports and diagnostics
+/FASE_*
+/VALIDACAO_FASE_*
+/DIAGNOSTICO_*
+/relatorio-erro-*
+
+# === Adicionado: backups locais com timestamp ===
+backup-fase30-*/
+_backup_simuladores_integracao/
+
+# === Adicionado: relatórios e diagnósticos locais ===
+/FASE*.txt
+/FASE*.md
+/FASE*.html
+/RELATORIO*.txt
+/RELATORIO*.md
+/RELATORIO*.html
+/B2_*.txt
+/E2E.md
+/SIMULADORES_*.txt
+/AUDITORIA_*.txt
+/FASE_*.md
+/test-output.txt
+/nav-*.txt
+/dev.err.log
+/e2e-backend.log
+/test-integration-full.log
+/tmp_*.js
+/tmp_*.log
+
+# === Adicionado: atalhos e temporários do Windows ===
+*.lnk

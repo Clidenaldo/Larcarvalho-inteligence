@@ -1,0 +1,7 @@
+.next
+coverage
+dist
+node_modules
+package-lock.json
+apps/backend/src/generated/prisma
+copilot_exports/

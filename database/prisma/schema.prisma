@@ -1,0 +1,1884 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../../apps/backend/src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum FonteDadosTipo {
+  API
+  CSV
+  XLSX
+  MANUAL
+  WEBSERVICE
+  PUBLIC_DATA
+  OUTRO
+
+  @@map("fonte_dados_tipo")
+}
+
+enum ImportacaoStatus {
+  PENDENTE
+  VALIDANDO
+  PRONTA
+  PROCESSANDO
+  CONCLUIDA
+  CONCLUIDA_COM_ERROS
+  FALHOU
+
+  @@map("importacao_status")
+}
+
+enum ImportacaoTipo {
+  ADMINISTRADORAS
+  PRODUTOS
+  GRUPOS
+  COTAS
+  ASSEMBLEIAS
+  LANCES
+  CONTEMPLACOES
+  TABELAS_COMERCIAIS
+
+  @@map("importacao_tipo")
+}
+
+enum TabelaComercialStatus {
+  ATIVA
+  INATIVA
+  ENCERRADA
+
+  @@map("tabela_comercial_status")
+}
+
+enum ModalidadeComercial {
+  NORMAL
+  MAIS_POR_MENOS
+  OUTRA
+
+  @@map("modalidade_comercial")
+}
+
+enum TabelaComercialOrigem {
+  MANUAL
+  IMPORTACAO
+  INTEGRACAO
+
+  @@map("tabela_comercial_origem")
+}
+
+enum ImportacaoEstrategia {
+  IGNORAR
+  ATUALIZAR
+
+  @@map("importacao_estrategia")
+}
+
+enum ArquivoClassificacao {
+  COMMERCIAL_TABLE
+  GROUP_PORTFOLIO
+  QUOTA_PORTFOLIO
+  ASSEMBLY_HISTORY
+  MIXED
+
+  @@map("arquivo_classificacao")
+}
+
+enum DataQualitySeverity {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+
+  @@map("data_quality_severity")
+}
+
+enum DataQualityStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+  IGNORED
+
+  @@map("data_quality_status")
+}
+
+enum DataQualityOrigin {
+  IMPORTACAO
+  VALIDACAO_INTERNA
+  PROCESSAMENTO
+  INTEGRACAO_FUTURA
+  AUDITORIA_MANUAL
+
+  @@map("data_quality_origin")
+}
+
+enum GrupoSnapshotOrigin {
+  MANUAL
+  IMPORTACAO
+  INTEGRACAO_FUTURA
+  PROCESSAMENTO_INTERNO
+
+  @@map("grupo_snapshot_origin")
+}
+
+enum IntegrationConnectorType {
+  MOCK
+  REST_API
+  SOAP
+  SFTP
+  FILE_PULL
+  WEBHOOK
+  MANUAL_IMPORT
+  FIXTURE
+}
+
+enum IntegrationStatus {
+  NAO_CONFIGURADA
+  ATIVA
+  PAUSADA
+  ERRO
+  DESABILITADA
+
+  @@map("integration_status")
+}
+
+enum IntegrationRunStatus {
+  PENDENTE
+  EXECUTANDO
+  SUCESSO
+  SUCESSO_PARCIAL
+  FALHA
+  CANCELADA
+
+  @@map("integration_run_status")
+}
+
+enum IntegrationTrigger {
+  MANUAL
+  SCHEDULED
+  WEBHOOK
+  RETRY
+  SYSTEM
+
+  @@map("integration_trigger")
+}
+
+enum IntegrationEntityType {
+  ADMINISTRADORA
+  PRODUTO
+  GRUPO
+  COTA
+  ASSEMBLEIA
+  LANCE
+  CONTEMPLACAO
+  TABELA_COMERCIAL
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  GESTOR
+  VENDEDOR
+  OPERADOR
+
+  @@map("user_role")
+}
+
+enum LeadOrigin {
+  SIMULADOR_PUBLICO
+  CADASTRO_MANUAL
+  WHATSAPP
+  INDICACAO
+  OUTRO
+
+  @@map("lead_origin")
+}
+
+enum LeadStatus {
+  NOVO
+  EM_ATENDIMENTO
+  CONTATO_REALIZADO
+  QUALIFICADO
+  PROPOSTA
+  NEGOCIACAO
+  CONVERTIDO
+  PERDIDO
+
+  @@map("lead_status")
+}
+
+enum LeadLossReason {
+  SEM_INTERESSE
+  SEM_RETORNO
+  VALOR_INCOMPATIVEL
+  PARCELA_INCOMPATIVEL
+  PRAZO_INCOMPATIVEL
+  ESCOLHEU_CONCORRENTE
+  ADIADO
+  OUTRO
+
+  @@map("lead_loss_reason")
+}
+
+enum LeadInteractionType {
+  NOTA
+  LIGACAO
+  WHATSAPP
+  EMAIL
+  REUNIAO
+  STATUS
+  OUTRO
+
+  @@map("lead_interaction_type")
+}
+
+enum SimulationCreditMode {
+  CONTRACTED_CREDIT
+  NET_CREDIT
+  CATEGORY_VALUE
+
+  @@map("simulation_credit_mode")
+}
+
+enum EmbeddedBidBasis {
+  CONTRACTED_CREDIT
+  PLAN_TOTAL
+
+  @@map("embedded_bid_basis")
+}
+
+enum BidType {
+  FIXED
+  FREE
+  PERCENTUAL
+
+  @@map("bid_type")
+}
+
+enum SimulationStatus {
+  DRAFT
+  CALCULATED
+  ARCHIVED
+
+  @@map("simulation_status")
+}
+
+enum SimulationCalculationStatus {
+  COMPLETE
+  INCOMPLETE_DATA
+  INELIGIBLE
+
+  @@map("simulation_calculation_status")
+}
+
+enum SimulationFavoriteType {
+  ADMINISTRATOR
+  PRODUCT
+  SIMULATION
+
+  @@map("simulation_favorite_type")
+}
+
+enum ProposalStatus {
+  DRAFT
+  GENERATED
+  SENT
+  VIEWED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  CANCELLED
+
+  @@map("proposal_status")
+}
+
+enum CommercialRoundingMode {
+  HALF_UP
+  UP
+  DOWN
+
+  @@map("commercial_rounding_mode")
+}
+
+model User {
+  teamId                String?                 @map("team_id") @db.Uuid
+  team                  Team?                   @relation("TeamMembers", fields: [teamId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  managedTeams          Team[]                  @relation("TeamManager")
+  permissionOverrides   UserPermissionOverride[]
+  sellerProfile         SellerProfile?
+  id                    String                  @id @default(uuid()) @db.Uuid
+  nome                  String                  @db.VarChar(200)
+  email                 String                  @unique @db.VarChar(254)
+  passwordHash          String                  @map("password_hash") @db.VarChar(255)
+  role                  UserRole
+  ativo                 Boolean                 @default(true)
+  telefoneWhatsapp      String?                 @map("telefone_whatsapp") @db.VarChar(30)
+  fotoUrl               String?                 @map("foto_url") @db.VarChar(2048)
+  interfacePreferences  Json?                   @map("interface_preferences") @db.JsonB
+  emailManaged          Boolean                 @default(true) @map("email_managed")
+  emailVerificadoEm     DateTime?               @map("email_verificado_em") @db.Timestamptz(3)
+  ultimoLoginEm         DateTime?               @map("ultimo_login_em") @db.Timestamptz(3)
+  createdAt             DateTime                @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt             DateTime                @updatedAt @map("updated_at") @db.Timestamptz(3)
+  sessions              Session[]
+  importacoes           Importacao[]
+  qualityIssuesResolved DataQualityIssue[]      @relation("DataQualityResolvedBy")
+  grupoSnapshotsCreated GrupoHistorico[]        @relation("GrupoSnapshotCreatedBy")
+  leadsResponsavel      Lead[]                  @relation("LeadResponsible")
+  leadInteractions      LeadInteracao[]         @relation("LeadInteractionCreatedBy")
+  followUpsAssigned     FollowUp[]              @relation("FollowUpAssigned")
+  followUpsCreated      FollowUp[]              @relation("FollowUpCreatedBy")
+  simulations           Simulation[]
+  simulationFavorites   SimulationFavorite[]
+  proposals             Proposal[]
+  proposalStatusChanges ProposalStatusHistory[]
+  salesResponsavel      Sale[]                  @relation("SaleResponsible")
+  salesCreated          Sale[]                  @relation("SaleCreatedBy")
+  saleStatusChanges     SaleStatusHistory[]
+  knowledgeDocuments    KnowledgeDocument[]     @relation("KnowledgeDocumentOwner")
+
+  @@index([role, ativo])
+  @@index([teamId])
+  @@index([ativo])
+  @@map("users")
+}
+
+model Session {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  tokenHash  String    @unique @map("token_hash") @db.Char(64)
+  expiresAt  DateTime  @map("expires_at") @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  lastUsedAt DateTime? @map("last_used_at") @db.Timestamptz(3)
+  revokedAt  DateTime? @map("revoked_at") @db.Timestamptz(3)
+  ipAddress  String?   @map("ip_address") @db.Inet
+  userAgent  String?   @map("user_agent") @db.Text
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId, expiresAt])
+  @@index([expiresAt])
+  @@index([userId, revokedAt])
+  @@map("sessions")
+}
+
+model Administradora {
+  id                  String                  @id @default(uuid()) @db.Uuid
+  nome                String                  @db.VarChar(200)
+  nomeFantasia        String?                 @map("nome_fantasia") @db.VarChar(200)
+  cnpj                String?                 @unique @db.VarChar(14)
+  codigoExterno       String?                 @map("codigo_externo") @db.VarChar(100)
+  site                String?                 @db.VarChar(2048)
+  ativa               Boolean                 @default(true)
+  createdAt           DateTime                @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime                @updatedAt @map("updated_at") @db.Timestamptz(3)
+  produtos            Produto[]
+  grupos              Grupo[]
+  fontesDados         FonteDados[]
+  integracoes         Integration[]
+  tabelasComerciais   TabelaComercial[]
+  commercialRules     ProductCommercialRule[]
+  simulationResults   SimulationResult[]
+  simulationFavorites SimulationFavorite[]
+  sales               Sale[]
+  commissions         Commission[]
+  commissionRules     CommissionRule[]
+
+  @@index([nome])
+  @@index([ativa])
+  @@index([codigoExterno])
+  @@map("administradoras")
+}
+
+model Produto {
+  id                  String                  @id @default(uuid()) @db.Uuid
+  administradoraId    String                  @map("administradora_id") @db.Uuid
+  nome                String                  @db.VarChar(200)
+  categoria           String                  @db.VarChar(80)
+  descricao           String?                 @db.Text
+  ativo               Boolean                 @default(true)
+  codigoExterno       String?                 @map("codigo_externo") @db.VarChar(100)
+  createdAt           DateTime                @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime                @updatedAt @map("updated_at") @db.Timestamptz(3)
+  administradora      Administradora          @relation(fields: [administradoraId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  grupos              Grupo[]
+  tabelasComerciais   TabelaComercial[]
+  commercialRules     ProductCommercialRule[]
+  simulationResults   SimulationResult[]
+  simulationFavorites SimulationFavorite[]
+  sales               Sale[]
+  commissionRules     CommissionRule[]
+
+  @@index([administradoraId, ativo])
+  @@index([administradoraId, categoria])
+  @@index([administradoraId, codigoExterno])
+  @@map("produtos")
+}
+
+model TabelaComercial {
+  id                          String                @id @default(uuid()) @db.Uuid
+  administradoraId            String                @map("administradora_id") @db.Uuid
+  produtoId                   String?               @map("produto_id") @db.Uuid
+  nome                        String                @db.VarChar(200)
+  codigo                      String                @db.VarChar(100)
+  categoria                   String                @db.VarChar(80)
+  inicioVigencia              DateTime              @map("inicio_vigencia") @db.Date
+  fimVigencia                 DateTime?             @map("fim_vigencia") @db.Date
+  status                      TabelaComercialStatus @default(ATIVA)
+  descricao                   String?               @db.Text
+  origem                      TabelaComercialOrigem @default(MANUAL)
+  indiceCorrecao              String?               @map("indice_correcao") @db.VarChar(100)
+  regraSeguro                 String?               @map("regra_seguro") @db.Text
+  regraContemplacao           String?               @map("regra_contemplacao") @db.Text
+  lanceFacilitado             Boolean?              @map("lance_facilitado")
+  cartaoCredito               Boolean?              @map("cartao_credito")
+  descricaoBem                String?               @map("descricao_bem") @db.Text
+  fundoReservaPercentual      Decimal?              @map("fundo_reserva_percentual") @db.Decimal(9, 6)
+  taxaAdministracaoPercentual Decimal?              @map("taxa_administracao_percentual") @db.Decimal(9, 6)
+  taxaTotalPercentual         Decimal?              @map("taxa_total_percentual") @db.Decimal(9, 6)
+  seguroVidaPercentual        Decimal?              @map("seguro_vida_percentual") @db.Decimal(9, 6)
+  participantesGrupo          Int?                  @map("participantes_grupo")
+  codigoPlanoNormal           String?               @map("codigo_plano_normal") @db.VarChar(100)
+  codigoPlanoMaisPorMenos     String?               @map("codigo_plano_mais_por_menos") @db.VarChar(100)
+  metadata                    Json?                 @db.JsonB
+  deletedAt                   DateTime?             @map("deleted_at") @db.Timestamptz(3)
+  createdAt                   DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt                   DateTime              @updatedAt @map("updated_at") @db.Timestamptz(3)
+  administradora              Administradora        @relation(fields: [administradoraId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  produto                     Produto?              @relation(fields: [produtoId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  itens                       TabelaComercialItem[]
+
+  @@unique([administradoraId, codigo, inicioVigencia])
+  @@index([deletedAt, administradoraId, status, inicioVigencia])
+  @@index([produtoId, status])
+  @@index([categoria, status])
+  @@index([codigo])
+  @@map("tabelas_comerciais")
+}
+
+model TabelaComercialItem {
+  id                          String              @id @default(uuid()) @db.Uuid
+  tabelaComercialId           String              @map("tabela_comercial_id") @db.Uuid
+  codigoExterno               String?             @map("codigo_externo") @db.VarChar(100)
+  creditoReferencia           Decimal             @map("credito_referencia") @db.Decimal(19, 2)
+  seguro                      Decimal?            @db.Decimal(19, 2)
+  taxaAntecipadaValor         Decimal?            @map("taxa_antecipada_valor") @db.Decimal(19, 2)
+  taxaAntecipadaPercentual    Decimal?            @map("taxa_antecipada_percentual") @db.Decimal(9, 6)
+  prazoMeses                  Int                 @map("prazo_meses")
+  modalidade                  ModalidadeComercial
+  primeiraParcela             Decimal?            @map("primeira_parcela") @db.Decimal(19, 2)
+  demaisParcelas              Decimal?            @map("demais_parcelas") @db.Decimal(19, 2)
+  parcelaPadrao               Decimal?            @map("parcela_padrao") @db.Decimal(19, 2)
+  fundoReservaPercentual      Decimal?            @map("fundo_reserva_percentual") @db.Decimal(9, 6)
+  taxaAdministracaoPercentual Decimal?            @map("taxa_administracao_percentual") @db.Decimal(9, 6)
+  taxaTotalPercentual         Decimal?            @map("taxa_total_percentual") @db.Decimal(9, 6)
+  seguroVidaPercentual        Decimal?            @map("seguro_vida_percentual") @db.Decimal(9, 6)
+  participantesGrupo          Int?                @map("participantes_grupo")
+  codigoPlano                 String?             @map("codigo_plano") @db.VarChar(100)
+  metadata                    Json?               @db.JsonB
+  createdAt                   DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt                   DateTime            @updatedAt @map("updated_at") @db.Timestamptz(3)
+  tabelaComercial             TabelaComercial     @relation(fields: [tabelaComercialId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([tabelaComercialId, creditoReferencia, prazoMeses, modalidade, codigoPlano])
+  @@index([tabelaComercialId, modalidade, prazoMeses])
+  @@index([codigoExterno])
+  @@map("tabelas_comerciais_itens")
+}
+
+model Grupo {
+  id                 String             @id @default(uuid()) @db.Uuid
+  administradoraId   String             @map("administradora_id") @db.Uuid
+  produtoId          String?            @map("produto_id") @db.Uuid
+  codigo             String             @db.VarChar(100)
+  status             String             @db.VarChar(80)
+  dataInicio         DateTime?          @map("data_inicio") @db.Date
+  dataEncerramento   DateTime?          @map("data_encerramento") @db.Date
+  prazoMeses         Int?               @map("prazo_meses")
+  quantidadeCotas    Int?               @map("quantidade_cotas")
+  valorCreditoMinimo Decimal?           @map("valor_credito_minimo") @db.Decimal(19, 2)
+  valorCreditoMaximo Decimal?           @map("valor_credito_maximo") @db.Decimal(19, 2)
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+  administradora     Administradora     @relation(fields: [administradoraId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  produto            Produto?           @relation(fields: [produtoId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  cotas              Cota[]
+  assembleias        Assembleia[]
+  historicos         GrupoHistorico[]
+  leadInteresses     LeadInteresse[]
+  simulationResults  SimulationResult[]
+  sales              Sale[]
+
+  @@unique([administradoraId, codigo])
+  @@index([administradoraId, status])
+  @@index([produtoId])
+  @@map("grupos")
+}
+
+model Cota {
+  id                String             @id @default(uuid()) @db.Uuid
+  grupoId           String             @map("grupo_id") @db.Uuid
+  numero            String             @db.VarChar(50)
+  status            String             @db.VarChar(80)
+  valorCredito      Decimal?           @map("valor_credito") @db.Decimal(19, 2)
+  prazoRestante     Int?               @map("prazo_restante")
+  parcelaAtual      Decimal?           @map("parcela_atual") @db.Decimal(19, 2)
+  codigoExterno     String?            @map("codigo_externo") @db.VarChar(100)
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+  grupo             Grupo              @relation(fields: [grupoId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  lances            Lance[]
+  contemplacoes     Contemplacao[]
+  simulationResults SimulationResult[]
+  sales             Sale[]
+
+  @@unique([grupoId, numero])
+  @@index([grupoId, status])
+  @@index([grupoId, codigoExterno])
+  @@map("cotas")
+}
+
+model Assembleia {
+  id             String         @id @default(uuid()) @db.Uuid
+  grupoId        String         @map("grupo_id") @db.Uuid
+  numero         String?        @db.VarChar(50)
+  dataAssembleia DateTime       @map("data_assembleia") @db.Timestamptz(3)
+  status         String         @db.VarChar(80)
+  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+  grupo          Grupo          @relation(fields: [grupoId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  lances         Lance[]
+  contemplacoes  Contemplacao[]
+
+  @@unique([grupoId, numero])
+  @@index([grupoId, dataAssembleia])
+  @@index([status])
+  @@map("assembleias")
+}
+
+model Lance {
+  id           String     @id @default(uuid()) @db.Uuid
+  assembleiaId String     @map("assembleia_id") @db.Uuid
+  cotaId       String?    @map("cota_id") @db.Uuid
+  tipo         String     @db.VarChar(80)
+  percentual   Decimal?   @db.Decimal(9, 6)
+  valor        Decimal?   @db.Decimal(19, 2)
+  contemplado  Boolean?
+  origem       String     @db.VarChar(80)
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime   @updatedAt @map("updated_at") @db.Timestamptz(3)
+  assembleia   Assembleia @relation(fields: [assembleiaId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  cota         Cota?      @relation(fields: [cotaId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([assembleiaId, tipo])
+  @@index([cotaId])
+  @@index([contemplado])
+  @@map("lances")
+}
+
+model Contemplacao {
+  id              String     @id @default(uuid()) @db.Uuid
+  assembleiaId    String     @map("assembleia_id") @db.Uuid
+  cotaId          String?    @map("cota_id") @db.Uuid
+  tipo            String     @db.VarChar(80)
+  codigoExterno   String?    @map("codigo_externo") @db.VarChar(100)
+  valorLance      Decimal?   @map("valor_lance") @db.Decimal(19, 2)
+  percentualLance Decimal?   @map("percentual_lance") @db.Decimal(9, 6)
+  createdAt       DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  assembleia      Assembleia @relation(fields: [assembleiaId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  cota            Cota?      @relation(fields: [cotaId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@unique([assembleiaId, codigoExterno])
+  @@index([assembleiaId, tipo])
+  @@index([cotaId])
+  @@map("contemplacoes")
+}
+
+model GrupoHistorico {
+  id                                String              @id @default(uuid()) @db.Uuid
+  grupoId                           String              @map("grupo_id") @db.Uuid
+  dataReferencia                    DateTime            @map("data_referencia") @db.Timestamptz(3)
+  origem                            GrupoSnapshotOrigin @default(MANUAL)
+  criadoPorId                       String?             @map("criado_por_id") @db.Uuid
+  fonteDadosId                      String?             @map("fonte_dados_id") @db.Uuid
+  importacaoId                      String?             @map("importacao_id") @db.Uuid
+  idempotencyKey                    String?             @map("idempotency_key") @db.Uuid
+  status                            String?             @db.VarChar(80)
+  prazoMeses                        Int?                @map("prazo_meses")
+  quantidadeCotasDeclarada          Int?                @map("quantidade_cotas_declarada")
+  quantidadeCotasRegistradas        Int?                @map("quantidade_cotas_registradas")
+  quantidadeParticipantes           Int?                @map("quantidade_participantes")
+  quantidadeCotasAtivas             Int?                @map("quantidade_cotas_ativas")
+  valorCreditoMinimo                Decimal?            @map("valor_credito_minimo") @db.Decimal(19, 2)
+  valorCreditoMaximo                Decimal?            @map("valor_credito_maximo") @db.Decimal(19, 2)
+  parcelaMedia                      Decimal?            @map("parcela_media") @db.Decimal(19, 2)
+  assembleiasRealizadas             Int?                @map("assembleias_realizadas")
+  assembleiasComDadosLance          Int?                @map("assembleias_com_dados_lance")
+  assembleiasComDadosContemplacao   Int?                @map("assembleias_com_dados_contemplacao")
+  lancesRegistrados                 Int?                @map("lances_registrados")
+  lancesContemplados                Int?                @map("lances_contemplados")
+  contemplacoesRegistradas          Int?                @map("contemplacoes_registradas")
+  contemplacoesSorteio              Int?                @map("contemplacoes_sorteio")
+  contemplacoesLance                Int?                @map("contemplacoes_lance")
+  contemplacoesOutras               Int?                @map("contemplacoes_outras")
+  percentualLanceContempladoMinimo  Decimal?            @map("percentual_lance_contemplado_minimo") @db.Decimal(9, 6)
+  percentualLanceContempladoMaximo  Decimal?            @map("percentual_lance_contemplado_maximo") @db.Decimal(9, 6)
+  percentualLanceContempladoMedio   Decimal?            @map("percentual_lance_contemplado_medio") @db.Decimal(9, 6)
+  percentualLanceContempladoMediano Decimal?            @map("percentual_lance_contemplado_mediano") @db.Decimal(9, 6)
+  issuesAbertas                     Int?                @map("issues_abertas")
+  issuesCriticas                    Int?                @map("issues_criticas")
+  observacoes                       Json?               @db.JsonB
+  createdAt                         DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  grupo                             Grupo               @relation(fields: [grupoId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  criadoPor                         User?               @relation("GrupoSnapshotCreatedBy", fields: [criadoPorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  fonteDados                        FonteDados?         @relation(fields: [fonteDadosId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  importacao                        Importacao?         @relation(fields: [importacaoId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@unique([grupoId, dataReferencia])
+  @@unique([grupoId, idempotencyKey])
+  @@index([dataReferencia])
+  @@index([fonteDadosId])
+  @@index([importacaoId])
+  @@index([criadoPorId, dataReferencia])
+  @@map("grupo_historicos")
+}
+
+model FonteDados {
+  id               String           @id @default(uuid()) @db.Uuid
+  administradoraId String?          @map("administradora_id") @db.Uuid
+  nome             String           @db.VarChar(200)
+  tipo             FonteDadosTipo
+  descricao        String?          @db.Text
+  ativa            Boolean          @default(true)
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+  administradora   Administradora?  @relation(fields: [administradoraId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  importacoes      Importacao[]
+  grupoHistoricos  GrupoHistorico[]
+  integracoes      Integration[]
+
+  @@index([administradoraId, ativa])
+  @@index([tipo, ativa])
+  @@map("fontes_dados")
+}
+
+model Importacao {
+  id                   String                @id @default(uuid()) @db.Uuid
+  fonteDadosId         String                @map("fonte_dados_id") @db.Uuid
+  criadoPorId          String?               @map("criado_por_id") @db.Uuid
+  tipo                 ImportacaoTipo?
+  nomeArquivo          String?               @map("nome_arquivo") @db.VarChar(255)
+  mimeType             String?               @map("mime_type") @db.VarChar(150)
+  tamanhoBytes         Int?                  @map("tamanho_bytes")
+  arquivoTemporario    String?               @map("arquivo_temporario") @db.VarChar(1024)
+  abas                 Json?                 @db.JsonB
+  abaSelecionada       String?               @map("aba_selecionada") @db.VarChar(200)
+  colunas              Json?                 @db.JsonB
+  mapeamento           Json?                 @db.JsonB
+  mapeamentoConfirmado Boolean               @default(false) @map("mapeamento_confirmado")
+  classificacaoArquivo ArquivoClassificacao? @map("classificacao_arquivo")
+  estrategia           ImportacaoEstrategia?
+  status               ImportacaoStatus      @default(PENDENTE)
+  iniciadaEm           DateTime              @default(now()) @map("iniciada_em") @db.Timestamptz(3)
+  validadaEm           DateTime?             @map("validada_em") @db.Timestamptz(3)
+  finalizadaEm         DateTime?             @map("finalizada_em") @db.Timestamptz(3)
+  totalRegistros       Int?                  @map("total_registros")
+  registrosValidos     Int?                  @map("registros_validos")
+  registrosInvalidos   Int?                  @map("registros_invalidos")
+  registrosCriados     Int?                  @map("registros_criados")
+  registrosAtualizados Int?                  @map("registros_atualizados")
+  registrosComAviso    Int?                  @map("registros_com_aviso")
+  registrosIgnorados   Int?                  @map("registros_ignorados")
+  registrosProcessados Int?                  @map("registros_processados")
+  erroResumo           String?               @map("erro_resumo") @db.Text
+  createdAt            DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime              @updatedAt @map("updated_at") @db.Timestamptz(3)
+  fonteDados           FonteDados            @relation(fields: [fonteDadosId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  criadoPor            User?                 @relation(fields: [criadoPorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  qualityIssues        DataQualityIssue[]
+  grupoHistoricos      GrupoHistorico[]
+  integrationRuns      IntegrationRun[]
+
+  @@index([fonteDadosId, status])
+  @@index([status, createdAt])
+  @@index([criadoPorId, createdAt])
+  @@index([tipo, createdAt])
+  @@map("importacoes")
+}
+
+model DataQualityIssue {
+  id               String              @id @default(uuid()) @db.Uuid
+  importacaoId     String?             @map("importacao_id") @db.Uuid
+  entidade         String              @db.VarChar(100)
+  registroId       String?             @map("registro_id") @db.VarChar(100)
+  campo            String?             @db.VarChar(100)
+  linha            Int?
+  valorRecebido    String?             @map("valor_recebido") @db.Text
+  codigo           String              @db.VarChar(100)
+  severidade       DataQualitySeverity
+  status           DataQualityStatus   @default(OPEN)
+  origem           DataQualityOrigin   @default(IMPORTACAO)
+  mensagem         String              @db.Text
+  metadata         Json?               @db.JsonB
+  dedupKey         String?             @unique @map("dedup_key") @db.VarChar(255)
+  administradoraId String?             @map("administradora_id") @db.Uuid
+  produtoId        String?             @map("produto_id") @db.Uuid
+  grupoId          String?             @map("grupo_id") @db.Uuid
+  resolvido        Boolean             @default(false)
+  resolvedById     String?             @map("resolved_by_id") @db.Uuid
+  resolutionAction String?             @map("resolution_action") @db.VarChar(300)
+  resolutionNote   String?             @map("resolution_note") @db.Text
+  createdAt        DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime            @updatedAt @map("updated_at") @db.Timestamptz(3)
+  resolvedAt       DateTime?           @map("resolved_at") @db.Timestamptz(3)
+  importacao       Importacao?         @relation(fields: [importacaoId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  resolvedBy       User?               @relation("DataQualityResolvedBy", fields: [resolvedById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([importacaoId, severidade])
+  @@index([entidade, registroId])
+  @@index([resolvido, severidade])
+  @@index([createdAt])
+  @@index([status, severidade, createdAt])
+  @@index([codigo, status])
+  @@index([administradoraId, status])
+  @@index([produtoId, status])
+  @@index([grupoId, status])
+  @@map("data_quality_issues")
+}
+
+model Integration {
+  id                      String                   @id @default(uuid()) @db.Uuid
+  administradoraId        String?                  @map("administradora_id") @db.Uuid
+  fonteDadosId            String?                  @map("fonte_dados_id") @db.Uuid
+  nome                    String                   @db.VarChar(200)
+  tipo                    IntegrationConnectorType
+  status                  IntegrationStatus        @default(NAO_CONFIGURADA)
+  configuracaoNaoSensivel Json?                    @map("configuracao_nao_sensivel") @db.JsonB
+  secretRef               String?                  @map("secret_ref") @db.VarChar(120)
+  frequencia              String?                  @db.VarChar(100)
+  ultimoSucessoEm         DateTime?                @map("ultimo_sucesso_em") @db.Timestamptz(3)
+  ultimaTentativaEm         DateTime?                @map("ultima_tentativa_em") @db.Timestamptz(3)
+  proximaExecucaoEm         DateTime?                @map("proxima_execucao_em") @db.Timestamptz(3)
+  cursor                    String?                  @db.Text
+  intervaloMinutos          Int?                     @map("intervalo_minutos")
+  syncLockedAt              DateTime?                @map("sync_locked_at") @db.Timestamptz(3)
+  syncLockedBy              String?                  @map("sync_locked_by") @db.VarChar(200)
+  createdAt               DateTime                 @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt               DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(3)
+  administradora          Administradora?          @relation(fields: [administradoraId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  fonteDados              FonteDados?              @relation(fields: [fonteDadosId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  runs                    IntegrationRun[]
+  logs                    IntegrationLog[]
+  externalMappings        ExternalEntityMapping[]
+  secrets                 IntegrationSecret[]
+  stagingRecords          IntegrationStagingRecord[]
+  webhookEvents           IntegrationWebhookEvent[]
+
+  @@index([administradoraId, status])
+  @@index([fonteDadosId, status])
+  @@index([tipo, status])
+  @@index([proximaExecucaoEm, status])
+  @@map("integrations")
+}
+
+model IntegrationRun {
+  id                   String               @id @default(uuid()) @db.Uuid
+  integrationId        String               @map("integration_id") @db.Uuid
+  importacaoId         String?              @map("importacao_id") @db.Uuid
+  status               IntegrationRunStatus @default(PENDENTE)
+  trigger              IntegrationTrigger
+  iniciadoEm           DateTime             @default(now()) @map("iniciado_em") @db.Timestamptz(3)
+  finalizadoEm         DateTime?            @map("finalizado_em") @db.Timestamptz(3)
+  registrosRecebidos   Int                  @default(0) @map("registros_recebidos")
+  registrosValidos     Int                  @default(0) @map("registros_validos")
+  registrosInvalidos   Int                  @default(0) @map("registros_invalidos")
+  registrosCriados     Int                  @default(0) @map("registros_criados")
+  registrosAtualizados Int                  @default(0) @map("registros_atualizados")
+  registrosIgnorados   Int                  @default(0) @map("registros_ignorados")
+  registrosRejeitados  Int                  @default(0) @map("registros_rejeitados")
+  issuesCriadas        Int                  @default(0) @map("issues_criadas")
+  cursor               String?              @db.VarChar(200)
+  mappingVersion       String?              @map("mapping_version") @db.VarChar(40)
+  normalizerVersion    String?              @map("normalizer_version") @db.VarChar(40)
+  providerSchemaVersion String?             @map("provider_schema_version") @db.VarChar(40)
+  erroCodigo           String?              @map("erro_codigo") @db.VarChar(100)
+  erroResumo           String?              @map("erro_resumo") @db.VarChar(1000)
+  requestId            String?              @map("request_id") @db.VarChar(100)
+  idempotencyKey       String?              @map("idempotency_key") @db.VarChar(200)
+  createdAt            DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
+  integration          Integration          @relation(fields: [integrationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  importacao           Importacao?          @relation(fields: [importacaoId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  logs                 IntegrationLog[]
+  stagingRecords       IntegrationStagingRecord[]
+
+  @@unique([integrationId, idempotencyKey])
+  @@index([integrationId, iniciadoEm])
+  @@index([status, iniciadoEm])
+  @@index([requestId])
+  @@index([importacaoId])
+  @@map("integration_runs")
+}
+
+model IntegrationLog {
+  id                   String          @id @default(uuid()) @db.Uuid
+  integrationId        String          @map("integration_id") @db.Uuid
+  runId                String?         @map("run_id") @db.Uuid
+  requestId            String?         @map("request_id") @db.VarChar(100)
+  evento               String?         @db.VarChar(100)
+  tipoOperacao         String          @map("tipo_operacao") @db.VarChar(100)
+  status               String          @db.VarChar(80)
+  iniciadaEm           DateTime        @default(now()) @map("iniciada_em") @db.Timestamptz(3)
+  finalizadaEm         DateTime?       @map("finalizada_em") @db.Timestamptz(3)
+  duracaoMs            Int?            @map("duracao_ms")
+  quantidade           Int?
+  registrosProcessados Int?            @map("registros_processados")
+  erroCodigo           String?         @map("erro_codigo") @db.VarChar(100)
+  mensagem             String?         @db.Text
+  createdAt            DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  integration          Integration     @relation(fields: [integrationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  run                  IntegrationRun? @relation(fields: [runId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([integrationId, status])
+  @@index([runId, createdAt])
+  @@index([requestId])
+  @@index([iniciadaEm])
+  @@map("integration_logs")
+}
+
+model ExternalEntityMapping {
+  id                String                @id @default(uuid()) @db.Uuid
+  integrationId     String                @map("integration_id") @db.Uuid
+  entityType        IntegrationEntityType @map("entity_type")
+  externalId        String                @map("external_id") @db.VarChar(255)
+  internalId        String                @map("internal_id") @db.Uuid
+  externalUpdatedAt DateTime?             @map("external_updated_at") @db.Timestamptz(3)
+  lastSeenAt        DateTime              @default(now()) @map("last_seen_at") @db.Timestamptz(3)
+  checksum          String?               @db.VarChar(64)
+  createdAt         DateTime              @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime              @updatedAt @map("updated_at") @db.Timestamptz(3)
+  integration       Integration           @relation(fields: [integrationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([integrationId, entityType, externalId])
+  @@index([entityType, internalId])
+  @@index([integrationId, lastSeenAt])
+  @@map("external_entity_mappings")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  actorId   String?  @map("actor_id") @db.VarChar(100)
+  action    String   @db.VarChar(100)
+  entity    String   @db.VarChar(100)
+  entityId  String?  @map("entity_id") @db.VarChar(100)
+  metadata  Json?    @db.JsonB
+  ipAddress String?  @map("ip_address") @db.Inet
+  userAgent String?  @map("user_agent") @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([entity, entityId])
+  @@index([actorId, createdAt])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model Lead {
+  id                        String            @id @default(uuid()) @db.Uuid
+  nome                      String            @db.VarChar(120)
+  telefoneNormalizado       String?           @map("telefone_normalizado") @db.VarChar(15)
+  emailNormalizado          String?           @map("email_normalizado") @db.VarChar(254)
+  origem                    LeadOrigin
+  status                    LeadStatus        @default(NOVO)
+  responsavelId             String?           @map("responsavel_id") @db.Uuid
+  categoriaInteresse        String?           @map("categoria_interesse") @db.VarChar(80)
+  valorCreditoDesejado      Decimal?          @map("valor_credito_desejado") @db.Decimal(19, 2)
+  parcelaMaxima             Decimal?          @map("parcela_maxima") @db.Decimal(19, 2)
+  prazoMinimo               Int?              @map("prazo_minimo")
+  prazoMaximo               Int?              @map("prazo_maximo")
+  lanceDisponivelPercentual Decimal?          @map("lance_disponivel_percentual") @db.Decimal(7, 4)
+  observacoes               String?           @db.VarChar(500)
+  objetivo                  String?           @db.VarChar(500)
+  dataPretendidaAquisicao   DateTime?         @map("data_pretendida_aquisicao") @db.Date
+  restricoes                String?           @db.VarChar(1000)
+  proximoContatoEm          DateTime?         @map("proximo_contato_em") @db.Timestamptz(3)
+  convertidoEm              DateTime?         @map("convertido_em") @db.Timestamptz(3)
+  motivoPerda               LeadLossReason?   @map("motivo_perda")
+  descricaoMotivoPerda      String?           @map("descricao_motivo_perda") @db.VarChar(300)
+  consentimentoContatoEm    DateTime?         @map("consentimento_contato_em") @db.Timestamptz(3)
+  analyticsSessionId        String?           @map("analytics_session_id") @db.Uuid
+  utmSource                 String?           @map("utm_source") @db.VarChar(100)
+  utmMedium                 String?           @map("utm_medium") @db.VarChar(100)
+  utmCampaign               String?           @map("utm_campaign") @db.VarChar(150)
+  utmContent                String?           @map("utm_content") @db.VarChar(150)
+  utmTerm                   String?           @map("utm_term") @db.VarChar(150)
+  referrerHost              String?           @map("referrer_host") @db.VarChar(255)
+  versaoTextoConsentimento  String?           @map("versao_texto_consentimento") @db.VarChar(40)
+  createdAt                 DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt                 DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
+  responsavel               User?             @relation("LeadResponsible", fields: [responsavelId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  interesses                LeadInteresse[]
+  interacoes                LeadInteracao[]
+  followUps                 FollowUp[]
+  analyticsSession          AnalyticsSession? @relation(fields: [analyticsSessionId], references: [id], onDelete: SetNull)
+  simulations               Simulation[]
+  proposals                 Proposal[]
+  sales                     Sale[]
+
+  @@index([status, createdAt])
+  @@index([responsavelId, status])
+  @@index([origem, createdAt])
+  @@index([proximoContatoEm, status])
+  @@index([telefoneNormalizado])
+  @@index([emailNormalizado])
+  @@index([analyticsSessionId])
+  @@map("leads")
+}
+
+model AnalyticsSession {
+  id           String           @id @default(uuid()) @db.Uuid
+  anonymousId  String           @unique @map("anonymous_id") @db.Uuid
+  startedAt    DateTime         @default(now()) @map("started_at") @db.Timestamptz(3)
+  lastSeenAt   DateTime         @default(now()) @map("last_seen_at") @db.Timestamptz(3)
+  landingPath  String?          @map("landing_path") @db.VarChar(200)
+  referrerHost String?          @map("referrer_host") @db.VarChar(255)
+  utmSource    String?          @map("utm_source") @db.VarChar(100)
+  utmMedium    String?          @map("utm_medium") @db.VarChar(100)
+  utmCampaign  String?          @map("utm_campaign") @db.VarChar(150)
+  utmContent   String?          @map("utm_content") @db.VarChar(150)
+  utmTerm      String?          @map("utm_term") @db.VarChar(150)
+  deviceClass  String?          @map("device_class") @db.VarChar(20)
+  createdAt    DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime         @updatedAt @map("updated_at") @db.Timestamptz(3)
+  events       AnalyticsEvent[]
+  leads        Lead[]
+
+  @@index([utmCampaign, createdAt])
+  @@map("analytics_sessions")
+}
+
+model AnalyticsEvent {
+  id         String           @id @default(uuid()) @db.Uuid
+  sessionId  String           @map("session_id") @db.Uuid
+  type       String           @db.VarChar(40)
+  path       String           @db.VarChar(200)
+  category   String?          @db.VarChar(40)
+  metadata   Json?            @db.JsonB
+  occurredAt DateTime         @default(now()) @map("occurred_at") @db.Timestamptz(3)
+  createdAt  DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  session    AnalyticsSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([type, occurredAt])
+  @@index([sessionId, occurredAt])
+  @@map("analytics_events")
+}
+
+model LeadInteresse {
+  id                          String   @id @default(uuid()) @db.Uuid
+  leadId                      String   @map("lead_id") @db.Uuid
+  grupoId                     String   @map("grupo_id") @db.Uuid
+  indiceAderenciaCapturado    Decimal? @map("indice_aderencia_capturado") @db.Decimal(7, 4)
+  coberturaAvaliacaoCapturada Decimal? @map("cobertura_avaliacao_capturada") @db.Decimal(7, 4)
+  capturadoEm                 DateTime @default(now()) @map("capturado_em") @db.Timestamptz(3)
+  principal                   Boolean  @default(false)
+  createdAt                   DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  lead                        Lead     @relation(fields: [leadId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  grupo                       Grupo    @relation(fields: [grupoId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([leadId, grupoId])
+  @@index([grupoId, createdAt])
+  @@map("lead_interesses")
+}
+
+model LeadInteracao {
+  id          String              @id @default(uuid()) @db.Uuid
+  leadId      String              @map("lead_id") @db.Uuid
+  tipo        LeadInteractionType
+  descricao   String              @db.VarChar(2000)
+  criadoPorId String?             @map("criado_por_id") @db.Uuid
+  ocorridoEm  DateTime            @default(now()) @map("ocorrido_em") @db.Timestamptz(3)
+  createdAt   DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
+  lead        Lead                @relation(fields: [leadId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  criadoPor   User?               @relation("LeadInteractionCreatedBy", fields: [criadoPorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([leadId, ocorridoEm, createdAt])
+  @@index([criadoPorId, createdAt])
+  @@map("lead_interacoes")
+}
+
+enum FollowUpType {
+  CALL
+  WHATSAPP
+  EMAIL
+  MEETING
+  OTHER
+
+  @@map("follow_up_type")
+}
+
+enum FollowUpStatus {
+  PENDING
+  COMPLETED
+  CANCELED
+
+  @@map("follow_up_status")
+}
+
+model FollowUp {
+  id             String         @id @default(uuid()) @db.Uuid
+  leadId         String         @map("lead_id") @db.Uuid
+  assignedUserId String?        @map("assigned_user_id") @db.Uuid
+  dueAt          DateTime       @map("due_at") @db.Timestamptz(3)
+  type           FollowUpType   @default(CALL)
+  status         FollowUpStatus @default(PENDING)
+  title          String         @db.VarChar(200)
+  notes          String?        @db.VarChar(2000)
+  completedAt    DateTime?      @map("completed_at") @db.Timestamptz(3)
+  createdById    String?        @map("created_by_id") @db.Uuid
+  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+  lead           Lead           @relation(fields: [leadId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  assignedUser   User?          @relation("FollowUpAssigned", fields: [assignedUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  createdBy      User?          @relation("FollowUpCreatedBy", fields: [createdById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([leadId, dueAt])
+  @@index([assignedUserId, status, dueAt])
+  @@map("follow_ups")
+}
+
+model CommercialConfiguration {
+  id                   String                 @id @default(uuid()) @db.Uuid
+  organizationName     String                 @default("Larcarvalho Consórcios") @map("organization_name") @db.VarChar(200)
+  currency             String                 @default("BRL") @db.Char(3)
+  roundingMode         CommercialRoundingMode @default(HALF_UP) @map("rounding_mode")
+  proposalValidityDays Int                    @default(7) @map("proposal_validity_days")
+  ruleVersionPrefix    String                 @default("LC") @map("rule_version_prefix") @db.VarChar(20)
+  requiredDisclaimer   String                 @map("required_disclaimer") @db.VarChar(1000)
+  active               Boolean                @default(true)
+  version              Int                    @default(1)
+  createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime               @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([active, updatedAt])
+  @@map("commercial_configurations")
+}
+
+model AppearanceConfiguration {
+  adminTheme      Json?    @map("admin_theme")
+  publicTheme     Json?    @map("public_theme")
+  id              String   @id @default(uuid()) @db.Uuid
+  commercialName  String   @default("Larcarvalho Consórcios") @map("commercial_name") @db.VarChar(200)
+  logoUrl         String?  @map("logo_url") @db.VarChar(2048)
+  primaryColor    String   @default("#34806b") @map("primary_color") @db.Char(7)
+  secondaryColor  String   @default("#000000") @map("secondary_color") @db.Char(7)
+  accentColor     String   @default("#c05400") @map("accent_color") @db.Char(7)
+  warningColor    String   @default("#9a5b08") @map("warning_color") @db.Char(7)
+  lightBackground String   @default("#f2f2f2") @map("light_background") @db.Char(7)
+  darkBackground  String   @default("#1a1a1a") @map("dark_background") @db.Char(7)
+  active          Boolean  @default(true)
+  version         Int      @default(1)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([active, updatedAt])
+  @@map("appearance_configurations")
+}
+
+model ProductCommercialRule {
+  id                          String             @id @default(uuid()) @db.Uuid
+  administradoraId            String             @map("administradora_id") @db.Uuid
+  produtoId                   String?            @map("produto_id") @db.Uuid
+  category                    String             @db.VarChar(80)
+  name                        String             @db.VarChar(200)
+  version                     Int
+  active                      Boolean            @default(true)
+  validFrom                   DateTime           @map("valid_from") @db.Timestamptz(3)
+  validUntil                  DateTime?          @map("valid_until") @db.Timestamptz(3)
+  administrationFeePercent    Decimal?           @map("administration_fee_percent") @db.Decimal(9, 6)
+  administrationFeeAmount     Decimal?           @map("administration_fee_amount") @db.Decimal(19, 2)
+  reserveFundPercent          Decimal?           @map("reserve_fund_percent") @db.Decimal(9, 6)
+  insurancePercent            Decimal?           @map("insurance_percent") @db.Decimal(9, 6)
+  insuranceAmount             Decimal?           @map("insurance_amount") @db.Decimal(19, 2)
+  adhesionFeePercent          Decimal?           @map("adhesion_fee_percent") @db.Decimal(9, 6)
+  adhesionFeeAmount           Decimal?           @map("adhesion_fee_amount") @db.Decimal(19, 2)
+  maxEmbeddedBidPercent       Decimal?           @map("max_embedded_bid_percent") @db.Decimal(9, 6)
+  embeddedBidBasis            EmbeddedBidBasis   @default(CONTRACTED_CREDIT) @map("embedded_bid_basis")
+  minimumTermMonths           Int?               @map("minimum_term_months")
+  maximumTermMonths           Int?               @map("maximum_term_months")
+  reducedInstallmentPercent   Decimal?           @map("reduced_installment_percent") @db.Decimal(9, 6)
+  reducedUntilContemplation   Boolean            @default(false) @map("reduced_until_contemplation")
+  diluteReducedInstallments   Boolean            @default(false) @map("dilute_reduced_installments")
+  categoryValueCreditRatio    Decimal?           @map("category_value_credit_ratio") @db.Decimal(9, 6)
+  bidType                     BidType            @default(FREE) @map("bid_type")
+  ownBidMaxPercent            Decimal?           @map("own_bid_max_percent") @db.Decimal(9, 6)
+  inProgressAllowed           Boolean            @default(false) @map("in_progress_allowed")
+  structuredOperationEligible Boolean            @default(false) @map("structured_operation_eligible")
+  notes                       String?            @db.VarChar(1000)
+  metadata                    Json?              @db.JsonB
+  deletedAt                   DateTime?          @map("deleted_at") @db.Timestamptz(3)
+  createdAt                   DateTime           @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt                   DateTime           @updatedAt @map("updated_at") @db.Timestamptz(3)
+  administradora              Administradora     @relation(fields: [administradoraId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  produto                     Produto?           @relation(fields: [produtoId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  results                     SimulationResult[]
+
+  @@unique([administradoraId, produtoId, category, version])
+  @@index([category, active, validFrom])
+  @@index([administradoraId, active])
+  @@index([produtoId, active])
+  @@index([deletedAt, updatedAt])
+  @@map("product_commercial_rules")
+}
+
+model Simulation {
+  id                       String               @id @default(uuid()) @db.Uuid
+  number                   String               @unique @db.VarChar(30)
+  createdById              String               @map("created_by_id") @db.Uuid
+  leadId                   String?              @map("lead_id") @db.Uuid
+  category                 String               @db.VarChar(80)
+  creditMode               SimulationCreditMode @map("credit_mode")
+  requestedCredit          Decimal              @map("requested_credit") @db.Decimal(19, 2)
+  desiredTermMonths        Int                  @map("desired_term_months")
+  ownBidAmount             Decimal              @default(0) @map("own_bid_amount") @db.Decimal(19, 2)
+  embeddedBidPercent       Decimal              @default(0) @map("embedded_bid_percent") @db.Decimal(9, 6)
+  paidInstallments         Int                  @default(0) @map("paid_installments")
+  structuredOperation      Boolean              @default(false) @map("structured_operation")
+  selectedAdministratorIds Json?                @map("selected_administrator_ids") @db.JsonB
+  selectedProductIds       Json?                @map("selected_product_ids") @db.JsonB
+  selectedGroupIds         Json?                @map("selected_group_ids") @db.JsonB
+  selectedQuotaIds         Json?                @map("selected_quota_ids") @db.JsonB
+  status                   SimulationStatus     @default(DRAFT)
+  notes                    String?              @db.VarChar(1000)
+  deletedAt                DateTime?            @map("deleted_at") @db.Timestamptz(3)
+  createdAt                DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt                DateTime             @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdBy                User                 @relation(fields: [createdById], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  lead                     Lead?                @relation(fields: [leadId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  scenarios                SimulationScenario[]
+  favorites                SimulationFavorite[]
+  proposals                Proposal[]
+
+  @@index([createdById, createdAt])
+  @@index([leadId, createdAt])
+  @@index([category, status, createdAt])
+  @@index([status, createdAt])
+  @@index([deletedAt, createdAt])
+  @@map("simulations")
+}
+
+model SimulationScenario {
+  id           String                          @id @default(uuid()) @db.Uuid
+  simulationId String                          @map("simulation_id") @db.Uuid
+  name         String                          @db.VarChar(120)
+  sortOrder    String                          @default("ADHERENCE") @map("sort_order") @db.VarChar(40)
+  pinned       Boolean                         @default(false)
+  parameters   Json                            @db.JsonB
+  createdAt    DateTime                        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt    DateTime                        @updatedAt @map("updated_at") @db.Timestamptz(3)
+  simulation   Simulation                      @relation(fields: [simulationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  results      SimulationResult[]
+  snapshots    SimulationCalculationSnapshot[]
+
+  @@index([simulationId, createdAt])
+  @@index([simulationId, pinned])
+  @@map("simulation_scenarios")
+}
+
+model SimulationCalculationSnapshot {
+  id                       String             @id @default(uuid()) @db.Uuid
+  scenarioId               String             @map("scenario_id") @db.Uuid
+  engineVersion            String             @map("engine_version") @db.VarChar(40)
+  inputSnapshot            Json               @map("input_snapshot") @db.JsonB
+  commercialConfigSnapshot Json               @map("commercial_config_snapshot") @db.JsonB
+  ruleSnapshots            Json               @map("rule_snapshots") @db.JsonB
+  sourceDataSnapshot       Json               @map("source_data_snapshot") @db.JsonB
+  calculatedAt             DateTime           @default(now()) @map("calculated_at") @db.Timestamptz(3)
+  scenario                 SimulationScenario @relation(fields: [scenarioId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  results                  SimulationResult[]
+
+  @@index([scenarioId, calculatedAt])
+  @@map("simulation_calculation_snapshots")
+}
+
+model SimulationResult {
+  id                    String                        @id @default(uuid()) @db.Uuid
+  scenarioId            String                        @map("scenario_id") @db.Uuid
+  calculationSnapshotId String                        @map("calculation_snapshot_id") @db.Uuid
+  commercialRuleId      String                        @map("commercial_rule_id") @db.Uuid
+  administradoraId      String                        @map("administradora_id") @db.Uuid
+  produtoId             String?                       @map("produto_id") @db.Uuid
+  grupoId               String?                       @map("grupo_id") @db.Uuid
+  cotaId                String?                       @map("cota_id") @db.Uuid
+  calculationStatus     SimulationCalculationStatus   @map("calculation_status")
+  calculationWarnings   Json                          @map("calculation_warnings") @db.JsonB
+  ruleVersion           String                        @map("rule_version") @db.VarChar(60)
+  sourceDataUpdatedAt   DateTime                      @map("source_data_updated_at") @db.Timestamptz(3)
+  administratorName     String                        @map("administrator_name") @db.VarChar(200)
+  productName           String?                       @map("product_name") @db.VarChar(200)
+  groupCode             String?                       @map("group_code") @db.VarChar(100)
+  quotaNumber           String?                       @map("quota_number") @db.VarChar(50)
+  category              String                        @db.VarChar(80)
+  contractedCredit      Decimal?                      @map("contracted_credit") @db.Decimal(19, 2)
+  netCredit             Decimal?                      @map("net_credit") @db.Decimal(19, 2)
+  totalTermMonths       Int?                          @map("total_term_months")
+  remainingTermMonths   Int?                          @map("remaining_term_months")
+  initialInstallment    Decimal?                      @map("initial_installment") @db.Decimal(19, 2)
+  reducedInstallment    Decimal?                      @map("reduced_installment") @db.Decimal(19, 2)
+  laterInstallment      Decimal?                      @map("later_installment") @db.Decimal(19, 2)
+  ownBidAmount          Decimal?                      @map("own_bid_amount") @db.Decimal(19, 2)
+  embeddedBidAmount     Decimal?                      @map("embedded_bid_amount") @db.Decimal(19, 2)
+  totalBidAmount        Decimal?                      @map("total_bid_amount") @db.Decimal(19, 2)
+  totalBidPercent       Decimal?                      @map("total_bid_percent") @db.Decimal(9, 6)
+  administrationFee     Decimal?                      @map("administration_fee") @db.Decimal(19, 2)
+  reserveFund           Decimal?                      @map("reserve_fund") @db.Decimal(19, 2)
+  insurance             Decimal?                      @db.Decimal(19, 2)
+  adhesionFee           Decimal?                      @map("adhesion_fee") @db.Decimal(19, 2)
+  adherenceScore        Int?                          @map("adherence_score")
+  assumptions           Json                          @db.JsonB
+  createdAt             DateTime                      @default(now()) @map("created_at") @db.Timestamptz(3)
+  scenario              SimulationScenario            @relation(fields: [scenarioId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  calculationSnapshot   SimulationCalculationSnapshot @relation(fields: [calculationSnapshotId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  commercialRule        ProductCommercialRule         @relation(fields: [commercialRuleId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  administradora        Administradora                @relation(fields: [administradoraId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  produto               Produto?                      @relation(fields: [produtoId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  grupo                 Grupo?                        @relation(fields: [grupoId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  cota                  Cota?                         @relation(fields: [cotaId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  proposalItems         ProposalItem[]
+
+  @@index([scenarioId, calculationStatus])
+  @@index([administradoraId, category])
+  @@index([produtoId, createdAt])
+  @@index([grupoId, createdAt])
+  @@index([cotaId, createdAt])
+  @@index([createdAt])
+  @@map("simulation_results")
+}
+
+model SimulationFavorite {
+  id               String                 @id @default(uuid()) @db.Uuid
+  userId           String                 @map("user_id") @db.Uuid
+  type             SimulationFavoriteType
+  administradoraId String?                @map("administradora_id") @db.Uuid
+  produtoId        String?                @map("produto_id") @db.Uuid
+  simulationId     String?                @map("simulation_id") @db.Uuid
+  createdAt        DateTime               @default(now()) @map("created_at") @db.Timestamptz(3)
+  user             User                   @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  administradora   Administradora?        @relation(fields: [administradoraId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  produto          Produto?               @relation(fields: [produtoId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  simulation       Simulation?            @relation(fields: [simulationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([userId, type, administradoraId, produtoId, simulationId])
+  @@index([userId, type, createdAt])
+  @@index([administradoraId])
+  @@index([produtoId])
+  @@index([simulationId])
+  @@map("simulation_favorites")
+}
+
+model Proposal {
+  id               String                  @id @default(uuid()) @db.Uuid
+  number           String                  @unique @db.VarChar(30)
+  simulationId     String                  @map("simulation_id") @db.Uuid
+  createdById      String                  @map("created_by_id") @db.Uuid
+  leadId           String                  @map("lead_id") @db.Uuid
+  status           ProposalStatus          @default(DRAFT)
+  title            String                  @db.VarChar(200)
+  objectiveSummary String                  @map("objective_summary") @db.VarChar(1000)
+  notes            String?                 @db.VarChar(2000)
+  snapshot         Json                    @db.JsonB
+  version          Int                     @default(1)
+  parentId         String?                 @map("parent_id") @db.Uuid
+  issuedAt         DateTime?               @map("issued_at") @db.Timestamptz(3)
+  validUntil       DateTime                @map("valid_until") @db.Timestamptz(3)
+  deletedAt        DateTime?               @map("deleted_at") @db.Timestamptz(3)
+  createdAt        DateTime                @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime                @updatedAt @map("updated_at") @db.Timestamptz(3)
+  simulation       Simulation              @relation(fields: [simulationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  createdBy        User                    @relation(fields: [createdById], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  lead             Lead                    @relation(fields: [leadId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  items            ProposalItem[]
+  statusHistory    ProposalStatusHistory[]
+  parent           Proposal?               @relation("ProposalVersions", fields: [parentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  versions         Proposal[]              @relation("ProposalVersions")
+  sales            Sale[]
+
+  @@index([leadId, createdAt])
+  @@index([parentId])
+  @@index([createdById, createdAt])
+  @@index([status, createdAt])
+  @@index([deletedAt, createdAt])
+  @@map("proposals")
+}
+
+model ProposalItem {
+  id                 String            @id @default(uuid()) @db.Uuid
+  proposalId         String            @map("proposal_id") @db.Uuid
+  simulationResultId String?           @map("simulation_result_id") @db.Uuid
+  position           Int
+  description        String            @db.VarChar(300)
+  financialSnapshot  Json              @map("financial_snapshot") @db.JsonB
+  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  proposal           Proposal          @relation(fields: [proposalId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  simulationResult   SimulationResult? @relation(fields: [simulationResultId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@unique([proposalId, position])
+  @@index([simulationResultId])
+  @@map("proposal_items")
+}
+
+model ProposalStatusHistory {
+  id          String          @id @default(uuid()) @db.Uuid
+  proposalId  String          @map("proposal_id") @db.Uuid
+  fromStatus  ProposalStatus? @map("from_status")
+  toStatus    ProposalStatus  @map("to_status")
+  changedById String          @map("changed_by_id") @db.Uuid
+  reason      String?         @db.VarChar(500)
+  createdAt   DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  proposal    Proposal        @relation(fields: [proposalId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  changedBy   User            @relation(fields: [changedById], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([proposalId, createdAt])
+  @@index([changedById, createdAt])
+  @@map("proposal_status_history")
+}
+
+
+enum PermissionEffect {
+  ALLOW
+  DENY
+  @@map("permission_effect")
+}
+
+model Team {
+  id String @id @default(uuid()) @db.Uuid
+  name String @db.VarChar(120)
+  description String? @db.VarChar(1000)
+  managerId String? @map("manager_id") @db.Uuid
+  manager User? @relation("TeamManager", fields: [managerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  members User[] @relation("TeamMembers")
+  sales Sale[]
+  knowledgeDocuments KnowledgeDocument[]
+  active Boolean @default(true)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  @@index([managerId, active])
+  @@map("teams")
+}
+
+model UserPermissionOverride {
+  userId String @map("user_id") @db.Uuid
+  permission String @db.VarChar(100)
+  effect PermissionEffect
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  @@id([userId, permission])
+  @@map("user_permission_overrides")
+}
+
+model SellerProfile {
+  userId String @id @map("user_id") @db.Uuid
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  registration String? @db.VarChar(80)
+  hiredAt DateTime? @map("hired_at") @db.Date
+  notes String? @db.VarChar(2000)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  @@map("seller_profiles")
+}
+
+// ---------------------------------------------------------------------------
+// Fase 26 — Venda, Contrato e Comissão
+// ---------------------------------------------------------------------------
+
+enum SaleStatus {
+  RASCUNHO
+  AGUARDANDO_DOCUMENTOS
+  DOCUMENTOS_RECEBIDOS
+  ENVIADA_ADMINISTRADORA
+  EM_ANALISE
+  APROVADA
+  CONTRATADA
+  RECUSADA
+  CANCELADA
+  @@map("sale_status")
+}
+
+enum SaleOrigin {
+  SIMULADOR_PUBLICO
+  CRM
+  INDICACAO
+  WHATSAPP
+  INSTAGRAM
+  SITE
+  MANUAL
+  OUTRO
+  @@map("sale_origin")
+}
+
+enum SaleCancelReason {
+  CLIENTE_DESISTIU
+  CREDITO_NEGADO
+  DOCUMENTACAO_REPROVADA
+  VALOR_ALTERADO
+  ESCOLHEU_CONCORRENTE
+  OUTRO
+  @@map("sale_cancel_reason")
+}
+
+enum ContractStatus {
+  RASCUNHO
+  EMITIDO
+  ASSINADO
+  ATIVO
+  CANCELADO
+  @@map("contract_status")
+}
+
+enum SaleDocumentType {
+  CPF
+  RG_CNH
+  COMPROVANTE_RESIDENCIA
+  COMPROVANTE_RENDA
+  FICHA_CADASTRAL
+  CONTRATO_ASSINADO
+  OUTRO
+  @@map("sale_document_type")
+}
+
+enum SaleDocumentStatus {
+  PENDENTE
+  RECEBIDO
+  VALIDADO
+  REJEITADO
+  DISPENSADO
+  @@map("sale_document_status")
+}
+
+enum CommissionType {
+  PRINCIPAL
+  BONIFICACAO
+  CAMPANHA
+  REPASSE
+  ESTORNO
+  @@map("commission_type")
+}
+
+enum CommissionStatus {
+  PREVISTA
+  CONFIRMADA
+  PARCIALMENTE_RECEBIDA
+  RECEBIDA
+  CANCELADA
+  ESTORNADA
+  @@map("commission_status")
+}
+
+enum CommissionBase {
+  CREDITO
+  TAXA_ADMINISTRACAO
+  PARCELA
+  VALOR_FIXO
+  OUTRA
+  @@map("commission_base")
+}
+
+enum CommissionReverseReason {
+  CANCELAMENTO_VENDA
+  PAGAMENTO_INDEVIDO
+  OUTRO
+  @@map("commission_reverse_reason")
+}
+
+model Sale {
+  id String @id @default(uuid()) @db.Uuid
+  numero String @unique @db.VarChar(20)
+  leadId String @map("lead_id") @db.Uuid
+  proposalId String @map("proposal_id") @db.Uuid
+  proposalItemId String? @map("proposal_item_id") @db.Uuid
+  administradoraId String? @map("administradora_id") @db.Uuid
+  produtoId String? @map("produto_id") @db.Uuid
+  grupoId String? @map("grupo_id") @db.Uuid
+  cotaId String? @map("cota_id") @db.Uuid
+  responsavelUserId String @map("responsavel_user_id") @db.Uuid
+  teamId String? @map("team_id") @db.Uuid
+  origemVenda SaleOrigin @map("origem_venda")
+  canalVenda String? @map("canal_venda") @db.VarChar(120)
+  valorCreditoContratado Decimal @map("valor_credito_contratado") @db.Decimal(19, 2)
+  valorParcelaContratada Decimal? @map("valor_parcela_contratada") @db.Decimal(19, 2)
+  prazoContratado Int? @map("prazo_contratado")
+  status SaleStatus @default(RASCUNHO)
+  dataAceite DateTime @map("data_aceite") @db.Timestamptz(3)
+  dataVenda DateTime? @map("data_venda") @db.Timestamptz(3)
+  dataEnvioAdministradora DateTime? @map("data_envio_administradora") @db.Timestamptz(3)
+  dataContratacao DateTime? @map("data_contratacao") @db.Timestamptz(3)
+  dataCancelamento DateTime? @map("data_cancelamento") @db.Timestamptz(3)
+  motivoCancelamento SaleCancelReason? @map("motivo_cancelamento")
+  observacoes String? @db.VarChar(2000)
+  snapshot Json @db.JsonB
+  createdById String @map("created_by_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  lead Lead @relation(fields: [leadId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  proposal Proposal @relation(fields: [proposalId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  administradora Administradora? @relation(fields: [administradoraId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  produto Produto? @relation(fields: [produtoId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  grupo Grupo? @relation(fields: [grupoId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  cota Cota? @relation(fields: [cotaId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  responsavel User @relation("SaleResponsible", fields: [responsavelUserId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  team Team? @relation(fields: [teamId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  createdBy User @relation("SaleCreatedBy", fields: [createdById], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  statusHistory SaleStatusHistory[]
+  contracts SaleContract[]
+  documents SaleDocument[]
+  commissions Commission[]
+  @@index([leadId, createdAt])
+  @@index([proposalId])
+  @@index([responsavelUserId, status])
+  @@index([teamId, status])
+  @@index([status, createdAt])
+  @@index([administradoraId, status])
+  @@map("sales")
+}
+
+model SaleStatusHistory {
+  id String @id @default(uuid()) @db.Uuid
+  saleId String @map("sale_id") @db.Uuid
+  fromStatus SaleStatus? @map("from_status")
+  toStatus SaleStatus @map("to_status")
+  changedById String @map("changed_by_id") @db.Uuid
+  reason String? @db.VarChar(500)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  changedBy User @relation(fields: [changedById], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  @@index([saleId, createdAt])
+  @@map("sale_status_history")
+}
+
+model SaleContract {
+  id String @id @default(uuid()) @db.Uuid
+  saleId String @map("sale_id") @db.Uuid
+  numeroContrato String? @map("numero_contrato") @db.VarChar(100)
+  numeroPropostaAdministradora String? @map("numero_proposta_administradora") @db.VarChar(100)
+  numeroCota String? @map("numero_cota") @db.VarChar(50)
+  grupoCodigo String? @map("grupo_codigo") @db.VarChar(100)
+  statusContrato ContractStatus @default(RASCUNHO) @map("status_contrato")
+  dataEmissao DateTime? @map("data_emissao") @db.Timestamptz(3)
+  dataAssinatura DateTime? @map("data_assinatura") @db.Timestamptz(3)
+  dataInicio DateTime? @map("data_inicio") @db.Timestamptz(3)
+  valorCredito Decimal? @map("valor_credito") @db.Decimal(19, 2)
+  valorParcela Decimal? @map("valor_parcela") @db.Decimal(19, 2)
+  prazo Int?
+  documentoReferencia String? @map("documento_referencia") @db.VarChar(2048)
+  observacoes String? @db.VarChar(2000)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([saleId, createdAt])
+  @@map("sale_contracts")
+}
+
+model SaleDocument {
+  id String @id @default(uuid()) @db.Uuid
+  saleId String @map("sale_id") @db.Uuid
+  tipo SaleDocumentType
+  status SaleDocumentStatus @default(PENDENTE)
+  obrigatorio Boolean @default(true)
+  referencia String? @db.VarChar(2048)
+  observacoes String? @db.VarChar(2000)
+  recebidoEm DateTime? @map("recebido_em") @db.Timestamptz(3)
+  validadoEm DateTime? @map("validado_em") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@unique([saleId, tipo])
+  @@index([saleId, status])
+  @@map("sale_documents")
+}
+
+model Commission {
+  id String @id @default(uuid()) @db.Uuid
+  saleId String @map("sale_id") @db.Uuid
+  administradoraId String? @map("administradora_id") @db.Uuid
+  tipo CommissionType @default(PRINCIPAL)
+  status CommissionStatus @default(PREVISTA)
+  baseCalculo CommissionBase @map("base_calculo")
+  baseValor Decimal @map("base_valor") @db.Decimal(19, 2)
+  percentual Decimal? @db.Decimal(9, 6)
+  valorPrevisto Decimal @map("valor_previsto") @db.Decimal(19, 2)
+  valorConfirmado Decimal? @map("valor_confirmado") @db.Decimal(19, 2)
+  valorRecebido Decimal @default(0) @map("valor_recebido") @db.Decimal(19, 2)
+  competencia String @db.VarChar(7)
+  dataPrevistaPagamento DateTime? @map("data_prevista_pagamento") @db.Timestamptz(3)
+  dataConfirmacao DateTime? @map("data_confirmacao") @db.Timestamptz(3)
+  dataRecebimento DateTime? @map("data_recebimento") @db.Timestamptz(3)
+  referenciaExterna String? @map("referencia_externa") @db.VarChar(200)
+  observacoes String? @db.VarChar(2000)
+  regraSnapshot Json? @map("regra_snapshot") @db.JsonB
+  estornoDeId String? @map("estorno_de_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  administradora Administradora? @relation(fields: [administradoraId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  estornoDe Commission? @relation("CommissionReversal", fields: [estornoDeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  estornos Commission[] @relation("CommissionReversal")
+  @@index([saleId, status])
+  @@index([administradoraId, competencia])
+  @@index([status, competencia])
+  @@map("commissions")
+}
+
+model CommissionRule {
+  id String @id @default(uuid()) @db.Uuid
+  administradoraId String @map("administradora_id") @db.Uuid
+  produtoId String? @map("produto_id") @db.Uuid
+  categoria String? @db.VarChar(80)
+  tipoBase CommissionBase @map("tipo_base")
+  percentual Decimal? @db.Decimal(9, 6)
+  valorFixo Decimal? @map("valor_fixo") @db.Decimal(19, 2)
+  vigenciaInicio DateTime @map("vigencia_inicio") @db.Date
+  vigenciaFim DateTime? @map("vigencia_fim") @db.Date
+  ativo Boolean @default(true)
+  prioridade Int @default(0)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  administradora Administradora @relation(fields: [administradoraId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  produto Produto? @relation(fields: [produtoId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  @@index([administradoraId, ativo])
+  @@map("commission_rules")
+}
+
+model SaleSequence {
+  year Int @id
+  lastNumber Int @default(0) @map("last_number")
+  @@map("sale_sequences")
+}
+
+// ---------------------------------------------------------------------------
+// Fase 28 — Base de Conhecimento (RAG)
+// ---------------------------------------------------------------------------
+
+enum KnowledgeCategory {
+  MANUAL
+  REGULAMENTO
+  TABELA
+  PROCEDIMENTO
+  PRODUTO
+  COMERCIAL
+  INSTITUCIONAL
+  OUTRO
+  @@map("knowledge_category")
+}
+
+enum KnowledgeVisibility {
+  PUBLIC
+  TEAM
+  PRIVATE
+  @@map("knowledge_visibility")
+}
+
+enum KnowledgeDocumentStatus {
+  PROCESSING
+  READY
+  FAILED
+  ARCHIVED
+  @@map("knowledge_document_status")
+}
+
+enum KnowledgeSourceType {
+  MANUAL
+  UPLOAD
+  @@map("knowledge_source_type")
+}
+
+enum KnowledgeIngestionStatus {
+  PENDING
+  EXTRACTING
+  CHUNKING
+  READY
+  FAILED
+  @@map("knowledge_ingestion_status")
+}
+
+enum KnowledgeEmbeddingStatus {
+  NONE
+  PENDING
+  READY
+  FAILED
+  @@map("knowledge_embedding_status")
+}
+
+model KnowledgeDocument {
+  id              String                  @id @default(uuid()) @db.Uuid
+  title           String                  @db.VarChar(300)
+  description     String?                 @db.VarChar(2000)
+  category        KnowledgeCategory       @default(OUTRO)
+  visibility      KnowledgeVisibility     @default(PUBLIC)
+  status          KnowledgeDocumentStatus @default(PROCESSING)
+  sourceType      KnowledgeSourceType     @default(MANUAL) @map("source_type")
+  originalName    String?                 @map("original_name") @db.VarChar(300)
+  mimeType        String?                 @map("mime_type") @db.VarChar(200)
+  sizeBytes       Int                     @default(0) @map("size_bytes")
+  checksum        String?                 @db.VarChar(128)
+  storageKey      String?                 @map("storage_key") @db.VarChar(600)
+  contentText     String?                 @map("content_text") @db.Text
+  ownerUserId     String?                 @map("owner_user_id") @db.Uuid
+  teamId          String?                 @map("team_id") @db.Uuid
+  version         Int                     @default(1)
+  documentGroupId String                  @map("document_group_id") @db.Uuid
+  tags            String[]                @default([])
+  chunkCount      Int                     @default(0) @map("chunk_count")
+  failureReason   String?                 @map("failure_reason") @db.VarChar(500)
+  processedAt     DateTime?               @map("processed_at") @db.Timestamptz(3)
+  embeddingStatus KnowledgeEmbeddingStatus @default(NONE) @map("embedding_status")
+  embeddingProvider String?               @map("embedding_provider") @db.VarChar(40)
+  embeddingModel  String?                 @map("embedding_model") @db.VarChar(120)
+  embeddingVersion String?                @map("embedding_version") @db.VarChar(40)
+  embeddedAt      DateTime?               @map("embedded_at") @db.Timestamptz(3)
+  createdAt       DateTime                @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime                @updatedAt @map("updated_at") @db.Timestamptz(3)
+  owner           User?                   @relation("KnowledgeDocumentOwner", fields: [ownerUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  team            Team?                   @relation(fields: [teamId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  chunks          KnowledgeChunk[]
+  ingestions      KnowledgeIngestion[]
+  @@index([checksum])
+  @@index([status, category])
+  @@index([visibility, teamId])
+  @@index([ownerUserId])
+  @@index([documentGroupId, version])
+  @@index([category, createdAt])
+  @@map("knowledge_documents")
+}
+
+model KnowledgeChunk {
+  id          String            @id @default(uuid()) @db.Uuid
+  documentId  String            @map("document_id") @db.Uuid
+  ordinal     Int
+  content     String            @db.Text
+  contentHash String            @map("content_hash") @db.Char(64)
+  tokens      Int               @default(0)
+  section     String?           @db.VarChar(300)
+  page        Int?
+  embeddingStatus KnowledgeEmbeddingStatus @default(NONE) @map("embedding_status")
+  embeddingModel String?          @map("embedding_model") @db.VarChar(120)
+  embeddingVersion String?        @map("embedding_version") @db.VarChar(40)
+  embeddedAt   DateTime?         @map("embedded_at") @db.Timestamptz(3)
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  document    KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@unique([documentId, ordinal])
+  @@index([documentId])
+  @@map("knowledge_chunks")
+}
+
+model KnowledgeIngestion {
+  id            String                   @id @default(uuid()) @db.Uuid
+  documentId    String                   @map("document_id") @db.Uuid
+  status        KnowledgeIngestionStatus @default(PENDING)
+  chunksCreated Int                      @default(0) @map("chunks_created")
+  error         String?                  @db.VarChar(500)
+  startedAt     DateTime?                @map("started_at") @db.Timestamptz(3)
+  finishedAt    DateTime?                @map("finished_at") @db.Timestamptz(3)
+  createdAt     DateTime                 @default(now()) @map("created_at") @db.Timestamptz(3)
+  document      KnowledgeDocument        @relation(fields: [documentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  @@index([documentId, createdAt])
+  @@map("knowledge_ingestions")
+}
+
+// ---------------------------------------------------------------------------
+// Fase 29 — IA real de produção: telemetria de uso e precificação
+// ---------------------------------------------------------------------------
+
+model AiUsage {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String?  @map("user_id") @db.Uuid
+  provider      String   @db.VarChar(20)
+  model         String   @db.VarChar(120)
+  contextType   String   @map("context_type") @db.VarChar(40)
+  promptId      String?  @map("prompt_id") @db.VarChar(60)
+  promptVersion String?  @map("prompt_version") @db.VarChar(20)
+  inputTokens   Int?     @map("input_tokens")
+  outputTokens  Int?     @map("output_tokens")
+  totalTokens   Int?     @map("total_tokens")
+  estimated     Boolean  @default(false)
+  costMicros    BigInt?  @map("cost_micros")
+  currency      String?  @db.VarChar(8)
+  latencyMs     Int      @map("latency_ms")
+  status        String   @db.VarChar(20)
+  errorCode     String?  @map("error_code") @db.VarChar(80)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  @@index([userId, createdAt])
+  @@index([createdAt])
+  @@map("ai_usage")
+}
+
+model AiPricing {
+  id                     String   @id @default(uuid()) @db.Uuid
+  provider               String   @db.VarChar(20)
+  model                  String   @db.VarChar(120)
+  currency               String   @db.VarChar(8)
+  inputPerMillionMicros  BigInt   @map("input_per_million_micros")
+  outputPerMillionMicros BigInt   @map("output_per_million_micros")
+  cachedPerMillionMicros BigInt?  @map("cached_per_million_micros")
+  validFrom              DateTime @map("valid_from") @db.Timestamptz(3)
+  active                 Boolean  @default(true)
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt              DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  @@unique([provider, model])
+  @@map("ai_pricing")
+}
+
+// ---------------------------------------------------------------------------
+// Fase 30 — Hub de integrações: segredos, staging, webhooks
+// ---------------------------------------------------------------------------
+
+model IntegrationSecret {
+  id            String      @id @default(uuid()) @db.Uuid
+  integrationId String      @map("integration_id") @db.Uuid
+  keyName       String      @default("default") @map("key_name") @db.VarChar(80)
+  ciphertext    String      @db.Text
+  iv            String      @db.VarChar(64)
+  authTag       String      @map("auth_tag") @db.VarChar(64)
+  keyVersion    String      @default("1") @map("key_version") @db.VarChar(20)
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+  rotatedAt     DateTime?   @map("rotated_at") @db.Timestamptz(3)
+  integration   Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([integrationId, keyName])
+  @@index([integrationId])
+  @@map("integration_secrets")
+}
+
+model IntegrationStagingRecord {
+  id            String      @id @default(uuid()) @db.Uuid
+  runId         String      @map("run_id") @db.Uuid
+  integrationId String      @map("integration_id") @db.Uuid
+  externalId    String      @map("external_id") @db.VarChar(255)
+  entityType    String      @map("entity_type") @db.VarChar(40)
+  checksum      String      @db.VarChar(64)
+  payload       Json        @db.JsonB
+  schemaVersion String      @default("CANONICAL_V1") @map("schema_version") @db.VarChar(40)
+  status        String      @default("PENDING") @db.VarChar(20)
+  errorCode     String?     @map("error_code") @db.VarChar(100)
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  run           IntegrationRun @relation(fields: [runId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  integration   Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([runId, entityType, externalId])
+  @@index([runId])
+  @@map("integration_staging_records")
+}
+
+model IntegrationWebhookEvent {
+  id            String      @id @default(uuid()) @db.Uuid
+  integrationId String      @map("integration_id") @db.Uuid
+  eventId       String      @map("event_id") @db.VarChar(200)
+  checksum      String      @db.VarChar(64)
+  payload       Json        @db.JsonB
+  status        String      @default("RECEIVED") @db.VarChar(20)
+  receivedAt    DateTime    @default(now()) @map("received_at") @db.Timestamptz(3)
+  integration   Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([integrationId, eventId])
+  @@index([integrationId])
+  @@map("integration_webhook_events")
+}

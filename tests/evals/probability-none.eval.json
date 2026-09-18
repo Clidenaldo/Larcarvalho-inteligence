@@ -1,0 +1,19 @@
+{
+  "id": "probability-none",
+  "version": "v1",
+  "harness": "http-api",
+  "description": "Sem modelo probabilístico aprovado: nenhum percentual inventado.",
+  "setup": { "documents": [] },
+  "steps": [
+    {
+      "as": "seller",
+      "message": "Qual cliente tem maior chance de fechar?",
+      "promptId": "commercial-copilot",
+      "contextType": "GENERAL",
+      "expect": {
+        "mustContain": ["ainda não configurada"],
+        "mustNotMatch": ["\\d+\\s*%", "chance de fechamento"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "rbac-team-b",
+  "version": "v1",
+  "harness": "http-api",
+  "description": "Vendedor A nunca recebe conteúdo TEAM_B em nenhum modo.",
+  "setup": {
+    "teams": ["Equipe EVAL29 A", "Equipe EVAL29 B"],
+    "users": [
+      { "email": "eval29-seller-a@test.local", "role": "VENDEDOR", "team": "Equipe EVAL29 A" },
+      { "email": "eval29-seller-b@test.local", "role": "VENDEDOR", "team": "Equipe EVAL29 B" }
+    ],
+    "documents": [
+      {
+        "category": "PROCEDIMENTO",
+        "content": "Diretriz exclusiva TOKEN-EVAL29-EQUIPE-B sobre o procedimento interno.",
+        "owner": "admin",
+        "team": "Equipe EVAL29 B",
+        "title": "Diretriz EVAL29 B",
+        "visibility": "TEAM"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "as": "eval29-seller-a@test.local",
+      "message": "TOKEN-EVAL29-EQUIPE-B",
+      "promptId": "knowledge-grounded-answer",
+      "contextType": "KNOWLEDGE",
+      "expect": {
+        "grounded": false,
+        "minSources": 0,
+        "mustNotContain": ["TOKEN-EVAL29-EQUIPE-B"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+/* Scoped aliases reuse the design system without changing the administrative shell. */
+.public-theme {
+  --color-primary: var(--public-primary);
+  --color-brand: var(--public-primary);
+  --color-primary-hover: color-mix(in srgb, var(--public-primary) 85%, black);
+  --color-primary-soft: color-mix(
+    in srgb,
+    var(--public-primary) 10%,
+    transparent
+  );
+  --color-secondary: var(--public-secondary);
+  --color-secondary-hover: color-mix(in srgb, var(--public-secondary) 90%, white);
+  --color-warning: #9a5b08;
+  --color-accent: var(--public-accent);
+  --color-background: var(--public-background);
+  --color-surface: var(--public-surface);
+  --color-surface-subtle: var(--public-surface-subtle);
+  --color-text: var(--public-text);
+  --color-text-soft: var(--public-text-muted);
+  --color-muted: var(--public-text-muted);
+  --color-border: var(--public-border);
+  --color-border-strong: var(--public-border);
+  --color-focus: var(--public-focus);
+  color: var(--public-text);
+  background: var(--public-background);
+}
+.public-theme :where(h1, h2, h3, h4, legend) {
+  color: var(--public-title);
+}
+.public-theme ::selection {
+  background: var(--public-focus);
+  color: var(--public-button-primary-text);
+}
+.public-theme
+  :where(
+    input:not([type='radio']):not([type='checkbox']):not([type='color']),
+    select,
+    textarea
+  ) {
+  color: var(--public-text);
+  background-color: var(--public-input-background);
+  border-color: var(--public-border);
+}
+.public-theme :where(input, select, textarea):focus {
+  border-color: var(--public-focus);
+  outline-color: var(--public-focus);
+}
+.public-theme :where(input[type='radio'], input[type='checkbox']) {
+  accent-color: var(--public-focus);
+}
+.public-theme :is(.public-button-primary, [data-button-variant='primary']) {
+  background-color: var(--public-button-primary);
+  color: var(--public-button-primary-text);
+}
+.public-theme :is(.public-button-secondary, [data-button-variant='secondary']) {
+  background-color: var(--public-button-secondary);
+  color: var(--public-button-secondary-text);
+}
+.public-theme
+  :is(
+    .public-button-primary,
+    .public-button-secondary,
+    [data-button-variant='primary'],
+    [data-button-variant='secondary']
+  ):hover:not(:disabled) {
+  filter: brightness(0.94);
+}
+.public-theme [data-button-variant='outline'] {
+  background-color: var(--public-surface);
+  color: var(--public-text);
+  border-color: var(--public-border);
+}
+.public-theme [data-button-variant='ghost'] {
+  color: var(--public-text-muted);
+}
+.public-theme [data-button-variant='ghost']:hover:not(:disabled) {
+  background-color: var(--public-surface-subtle);
+}
+.public-theme .public-header {
+  background-color: var(--public-header-background);
+  color: var(--public-header-text);
+}
+.public-theme
+  .public-header
+  :where(p, strong, a:not(.public-button-secondary)) {
+  color: inherit;
+}
+.public-theme .public-header {
+  --color-on-dark: var(--public-header-text);
+}
+.public-theme .public-simulator-header {
+  background-color: var(--public-simulator-header-background);
+  color: var(--public-simulator-header-text);
+}
+.public-theme .public-simulator-footer {
+  background-color: var(--public-simulator-footer-background);
+  color: var(--public-simulator-footer-text);
+}
+.public-theme .public-hero {
+  background-color: var(--public-hero-background);
+  color: var(--public-hero-text);
+  --color-on-dark: var(--public-hero-text);
+}
+.public-theme .public-hero > div > div:first-child :where(h1, h2),
+.public-theme .public-hero > div > div > h2 {
+  color: inherit;
+}
+.public-theme .public-hero .public-hero-heading {
+  color: var(--public-hero-text);
+}
+.public-theme .public-footer {
+  background-color: var(--public-footer-background);
+  color: var(--public-footer-text);
+}
+.public-theme .public-footer :where(h2, p, strong, a) {
+  color: inherit;
+}
+.public-theme .public-simulator {
+  --color-primary: var(--public-simulator-accent);
+  --color-primary-soft: color-mix(
+    in srgb,
+    var(--public-simulator-accent) 10%,
+    transparent
+  );
+}
+.public-theme .public-result {
+  background: var(--public-surface);
+}
+.public-theme .public-secondary-panel {
+  background: var(--public-secondary);
+  color: #ffffff;
+}
+.public-theme .public-secondary-panel :where(h3, p) {
+  color: inherit;
+}

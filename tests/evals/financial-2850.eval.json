@@ -1,0 +1,21 @@
+{
+  "id": "financial-2850",
+  "version": "v1",
+  "harness": "orchestrator-stub",
+  "description": "IA usa o saldo calculado (2850), sem recalcular com outra fórmula.",
+  "facts": [
+    "Venda 1001 — status: CONCLUIDA",
+    "Comissão PRINCIPAL: previsto 5000, confirmado 4850, recebido 2000 (CONFIRMADA)",
+    "Saldo confirmado a receber: 2850."
+  ],
+  "sources": [{ "kind": "Venda", "label": "Venda 1001" }],
+  "message": "Qual é o saldo a receber desta venda?",
+  "contextType": "SALE",
+  "contextId": "sale-eval-2850",
+  "promptId": "sale-summary",
+  "expect": {
+    "mustContain": ["2850"],
+    "mustNotContain": ["3000", "4850.00 +"],
+    "noRecalculation": true
+  }
+}

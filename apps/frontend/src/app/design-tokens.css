@@ -1,0 +1,59 @@
+/* Larcarvalho Intelligence Design System — semantic tokens, independent of UI libraries. */
+:root {
+  --neutral-50: #f8fafc;
+  --neutral-100: #f1f5f9;
+  --neutral-200: #e2e8f0;
+  --neutral-300: #cbd5e1;
+  --neutral-400: #94a3b8;
+  --neutral-500: #64748b;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1e293b;
+  --neutral-900: #0f172a;
+  --color-brand: #34806b;
+  --color-primary: #34806b;
+  --color-primary-hover: #2a6b58;
+  --color-primary-soft: rgb(52 128 107 / 10%);
+  --color-background: #f2f2f2;
+  --color-surface: #ffffff;
+  --color-surface-subtle: var(--neutral-50);
+  --color-dark-surface: #000000;
+  --color-on-dark: #ffffff;
+  --color-secondary: #000000;
+  --color-secondary-hover: #1a1a1a;
+  --color-accent: #c05400;
+  --color-muted: #6b7280;
+  --color-border: #b7c2cb;
+  --color-border-strong: #0f172a;
+  --color-text: #000000;
+  --color-text-soft: #475569;
+  --color-success: #34806b;
+  --color-warning: #9a5b08;
+  --color-danger: #b42335;
+  --color-danger-hover: #951f2e;
+  --color-info: #1263a5;
+  --color-loading: #1e96f7;
+  --color-focus: #34806b;
+  --gradient-brand-hero:
+    radial-gradient(circle at 85% 20%, rgb(255 255 255 / 16%), transparent 26%),
+    radial-gradient(circle at 10% 80%, rgb(0 0 0 / 40%), transparent 30%);
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --space-control: 0.875rem;
+  --space-panel: clamp(1.25rem, 3vw, 2rem);
+  --shadow-sm: 0 1px 2px rgb(18 35 45 / 5%);
+  --shadow-md: 0 12px 32px rgb(18 35 45 / 8%);
+  --transition-fast: 150ms;
+  --sidebar-width: 17rem;
+  --type-display: clamp(2.5rem, 5vw, 4rem);
+  --type-h1: clamp(1.75rem, 3vw, 2.5rem);
+  --type-h2: 1.5rem;
+  --type-h3: 1.125rem;
+  --type-subtitle: 1rem;
+  --type-body: 0.875rem;
+  --type-caption: 0.75rem;
+  --type-label: 0.8125rem;
+  --type-monetary: clamp(1.25rem, 2vw, 1.75rem);
+}

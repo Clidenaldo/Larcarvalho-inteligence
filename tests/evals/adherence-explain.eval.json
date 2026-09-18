@@ -1,0 +1,19 @@
+{
+  "id": "adherence-explain",
+  "version": "v1",
+  "harness": "orchestrator-stub",
+  "description": "IA explica a aderência fornecida (82.5), sem recalcular nem virar chance.",
+  "facts": [
+    "Aderência (snapshot armazenado, sem recálculo): 82.5",
+    "Alternativa: Administradora Alfa G12345"
+  ],
+  "sources": [{ "kind": "Índice de Aderência", "label": "Aderência 82.5 (snapshot)" }],
+  "message": "Explique a aderência desta simulação.",
+  "contextType": "SIMULATION",
+  "contextId": "sim-eval-825",
+  "promptId": "simulation-explanation",
+  "expect": {
+    "mustContain": ["82.5"],
+    "mustNotMatch": ["chance de contemplação", "probabilidade", "\\d+\\s*% de chance"]
+  }
+}

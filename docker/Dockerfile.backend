@@ -1,0 +1,28 @@
+FROM node:24-alpine AS dependencies
+WORKDIR /app
+COPY package.json package-lock.json ./
+COPY apps/frontend/package.json apps/frontend/package.json
+COPY apps/backend/package.json apps/backend/package.json
+COPY packages/shared/package.json packages/shared/package.json
+RUN npm ci
+
+FROM dependencies AS builder
+COPY tsconfig.base.json ./
+COPY packages/shared packages/shared
+COPY database/prisma database/prisma
+COPY apps/backend apps/backend
+RUN npm run build --workspace @larcarvalho/backend
+
+FROM node:24-alpine AS runner
+ENV BACKEND_HOST=0.0.0.0 BACKEND_PORT=3001 NODE_ENV=production
+WORKDIR /app
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=builder /app/apps/backend/dist ./apps/backend/dist
+COPY --from=builder /app/apps/backend/package.json ./apps/backend/package.json
+COPY --from=builder /app/apps/backend/prisma.config.ts ./apps/backend/prisma.config.ts
+COPY --from=builder /app/database/prisma ./database/prisma
+COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
+COPY --from=builder /app/packages/shared/package.json ./packages/shared/package.json
+USER node
+EXPOSE 3001
+CMD ["node", "apps/backend/dist/server.js"]

@@ -1,0 +1,1 @@
+export default function Loading() { return <div aria-label="Carregando gestao comercial" className="animate-pulse space-y-5"><div className="h-16 bg-slate-100" /><div className="grid gap-3 sm:grid-cols-3"><div className="h-32 bg-slate-100" /><div className="h-32 bg-slate-100" /><div className="h-32 bg-slate-100" /></div><div className="h-80 bg-slate-100" /></div>; }

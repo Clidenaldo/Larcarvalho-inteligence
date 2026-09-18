@@ -1,0 +1,115 @@
+/* One design system, bounded aliases. Nested previews start a fresh scope. */
+@scope (.admin-theme) to (.public-theme, .admin-theme) {
+  :scope {
+    --color-primary: var(--admin-primary);
+    --color-brand: var(--admin-primary);
+    --color-primary-hover: color-mix(in srgb, var(--admin-primary) 85%, black);
+    --color-primary-soft: color-mix(
+      in srgb,
+      var(--admin-primary) 10%,
+      var(--admin-surface)
+    );
+    --color-secondary: var(--admin-secondary);
+    --color-secondary-hover: color-mix(
+      in srgb,
+      var(--admin-secondary) 90%,
+      white
+    );
+    --color-accent: var(--admin-accent);
+    --color-warning: var(--admin-warning);
+    --color-background: var(--admin-background);
+    --color-surface: var(--admin-surface);
+    --color-surface-subtle: var(--admin-surface-subtle);
+    --color-text: var(--admin-text);
+    --color-text-soft: var(--admin-text-soft);
+    --color-muted: var(--admin-text-muted);
+    --color-border: var(--admin-border);
+    --color-border-strong: var(--admin-border-strong);
+    --color-focus: var(--admin-focus);
+    color: var(--admin-text);
+    background-color: var(--admin-background);
+    color-scheme: light;
+  }
+  ::selection {
+    color: var(--admin-button-primary-text);
+    background: var(--admin-focus);
+  }
+  .bg-white {
+    background-color: var(--admin-surface);
+  }
+  .bg-white\/95 {
+    background-color: color-mix(in srgb, var(--admin-surface) 95%, transparent);
+  }
+  .bg-white\/70 {
+    background-color: color-mix(in srgb, var(--admin-surface) 70%, transparent);
+  }
+  .bg-slate-50 {
+    background-color: var(--admin-neutral-subtle);
+  }
+  .bg-slate-100 {
+    background-color: var(--admin-neutral-background);
+  }
+  .text-slate-500 {
+    color: var(--admin-neutral-muted);
+  }
+  .text-slate-600 {
+    color: var(--admin-neutral-soft);
+  }
+  .hover\:bg-slate-50:hover {
+    background-color: var(--admin-neutral-subtle);
+  }
+  .hover\:bg-slate-100:hover {
+    background-color: var(--admin-neutral-background);
+  }
+  :scope[data-admin-card-background='custom'] [data-ui='card'] {
+    background-color: var(--admin-card-background);
+  }
+  :scope[data-admin-card-border='custom'] [data-ui='card'] {
+    border-color: var(--admin-card-border);
+  }
+  :where(
+    input:not([type='radio']):not([type='checkbox']):not([type='color']),
+    select,
+    textarea
+  ):not(:disabled) {
+    background-color: var(--admin-input-background);
+  }
+  [data-button-variant='primary'] {
+    background-color: var(--admin-button-primary);
+    color: var(--admin-button-primary-text);
+  }
+  [data-button-variant='primary']:hover:not(:disabled) {
+    background-color: color-mix(
+      in srgb,
+      var(--admin-button-primary) 85%,
+      black
+    );
+  }
+  :scope[data-admin-table-background='custom'] thead {
+    background-color: var(--admin-table-header-background);
+  }
+  :scope[data-admin-table-text='custom'] thead {
+    color: var(--admin-table-header-text);
+  }
+  .app-navigation {
+    --color-text-soft: var(--admin-sidebar-text);
+    --color-text: var(--admin-sidebar-heading);
+    --color-muted: var(--admin-sidebar-muted);
+    background-color: var(--admin-sidebar-background);
+    color: var(--admin-sidebar-heading);
+  }
+  .app-navigation [aria-current='page'] {
+    background-color: var(--admin-sidebar-active-background);
+    color: var(--admin-sidebar-active);
+  }
+  .app-header {
+    --color-text: var(--admin-header-text);
+    --color-muted: var(--admin-header-muted);
+    background-color: color-mix(
+      in srgb,
+      var(--admin-header-background) 95%,
+      transparent
+    );
+    color: var(--admin-header-text);
+  }
+}

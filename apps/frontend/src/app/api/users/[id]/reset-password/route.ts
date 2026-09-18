@@ -1,0 +1,5 @@
+import { proxyIdentityRequest } from '../../../../../services/api/identity-proxy';
+export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
+ const { id } = await context.params;
+ return proxyIdentityRequest(request, `/api/v1/users/${id}/reset-password`);
+}

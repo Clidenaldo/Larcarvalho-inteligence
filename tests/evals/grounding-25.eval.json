@@ -1,0 +1,30 @@
+{
+  "id": "grounding-25",
+  "version": "v1",
+  "harness": "http-api",
+  "description": "Resposta ancorada em evidência real com fonte exibida.",
+  "setup": {
+    "documents": [
+      {
+        "category": "PRODUTO",
+        "content": "O lance fixo deste plano corresponde a 25% do crédito contratado.",
+        "title": "Manual Administradora Alfa EVAL29",
+        "visibility": "PUBLIC"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "as": "seller",
+      "message": "Qual é o lance fixo deste plano?",
+      "promptId": "knowledge-grounded-answer",
+      "contextType": "KNOWLEDGE",
+      "expect": {
+        "grounded": true,
+        "minSources": 1,
+        "mustContain": ["25%"],
+        "mustNotContain": ["COMISSAO-SECRETA-EVAL"]
+      }
+    }
+  ]
+}

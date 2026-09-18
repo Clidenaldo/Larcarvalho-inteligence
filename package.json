@@ -1,0 +1,62 @@
+{
+  "name": "larcarvalho-intelligence",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Fundação técnica da plataforma Larcarvalho Intelligence.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=24.0.0 <25",
+    "npm": ">=11.0.0 <12"
+  },
+  "packageManager": "npm@11.19.0",
+  "scripts": {
+    "dev": "concurrently -n frontend,backend -c cyan,green \"npm:dev:frontend\" \"npm:dev:backend\"",
+    "dev:frontend": "npm run dev --workspace @larcarvalho/frontend",
+    "dev:backend": "npm run dev --workspace @larcarvalho/backend",
+    "build": "npm run build --workspaces --if-present",
+    "start:frontend": "npm run start --workspace @larcarvalho/frontend",
+    "start:backend": "npm run start --workspace @larcarvalho/backend",
+    "create-super-admin": "npm run create-super-admin --workspace @larcarvalho/backend --",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:integration:prepare": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-integration-database.ps1",
+    "test:integration": "npm run test:integration:prepare && npm run test:integration --workspace @larcarvalho/backend",
+    "test:ai:live": "node scripts/ai-live-test.mjs",
+    "check": "npm run prisma:validate && npm run lint && npm run typecheck && npm run test && npm run build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prisma:format": "npm run prisma:format --workspace @larcarvalho/backend",
+    "prisma:validate": "npm run prisma:validate --workspace @larcarvalho/backend",
+    "prisma:generate": "npm run prisma:generate --workspace @larcarvalho/backend",
+    "prisma:migrate:dev": "npm run prisma:migrate:dev --workspace @larcarvalho/backend",
+    "prisma:migrate:deploy": "npm run prisma:migrate:deploy --workspace @larcarvalho/backend",
+    "prisma:migrate:status": "npm run prisma:migrate:status --workspace @larcarvalho/backend",
+    "prisma:migrate:test:deploy": "npm run prisma:migrate:test:deploy --workspace @larcarvalho/backend",
+    "prisma:migrate:test:status": "npm run prisma:migrate:test:status --workspace @larcarvalho/backend",
+    "e2e": "playwright test",
+    "e2e:sales": "npm run build && playwright test --config playwright.sales.config.ts",
+    "e2e:ui": "playwright test --ui",
+    "e2e:debug": "playwright test --debug",
+    "e2e:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "^1.62.1",
+    "@types/node": "26.4.0",
+    "concurrently": "10.0.5",
+    "eslint": "10.9.1",
+    "prettier": "3.9.6",
+    "tsx": "^4.23.13",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.68.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "prisma@7.10.0": true,
+    "@prisma/engines@7.10.0": true
+  }
+}

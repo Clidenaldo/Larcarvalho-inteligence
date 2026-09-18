@@ -1,0 +1,33 @@
+{
+  "name": "@larcarvalho/frontend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "predev": "npm run build --workspace @larcarvalho/shared",
+    "dev": "node --use-system-ca ../../node_modules/next/dist/bin/next dev --port 3000 --webpack",
+    "prebuild": "npm run build --workspace @larcarvalho/shared",
+    "build": "node --use-system-ca ../../node_modules/next/dist/bin/next build --webpack",
+    "start": "node .next/standalone/apps/frontend/server.js",
+    "typecheck": "tsc --noEmit",
+    "pretest": "npm run build --workspace @larcarvalho/shared",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@larcarvalho/shared": "0.0.0",
+    "lucide-react": "^1.38.0",
+    "next": "16.3.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "jsdom": "^30.0.1",
+    "postcss": "8.5.26",
+    "tailwindcss": "4.3.3",
+    "vitest": "4.1.11"
+  }
+}

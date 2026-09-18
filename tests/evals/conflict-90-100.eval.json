@@ -1,0 +1,35 @@
+{
+  "id": "conflict-90-100",
+  "version": "v1",
+  "harness": "http-api",
+  "description": "Fontes conflitantes não viram verdade única silenciosa.",
+  "setup": {
+    "documents": [
+      {
+        "category": "PRODUTO",
+        "content": "Prazo do plano teste eval: 90 meses conforme regulamento vigente.",
+        "title": "Plano teste 90 EVAL29",
+        "visibility": "PUBLIC"
+      },
+      {
+        "category": "PRODUTO",
+        "content": "Prazo do plano teste eval: 100 meses conforme regulamento vigente.",
+        "title": "Plano teste 100 EVAL29",
+        "visibility": "PUBLIC"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "as": "seller",
+      "message": "Qual é o prazo do plano teste eval?",
+      "promptId": "knowledge-grounded-answer",
+      "contextType": "KNOWLEDGE",
+      "expect": {
+        "grounded": true,
+        "minSources": 2,
+        "mustContain": ["90", "100"]
+      }
+    }
+  ]
+}

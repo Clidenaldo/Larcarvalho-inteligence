@@ -1,0 +1,32 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "files.eol": "\n",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "github.copilot.chat.codesearch.enabled": true,
+  "github.copilot.chat.alternateGeminiModelFPrompt.enabled": true,
+  "github.copilot.chat.alternateGptPrompt.enabled": true,
+  "github.copilot.chat.anthropic.tools.websearch.enabled": true,
+  "github.copilot.chat.claudeOpus5Prompt.enabled": true,
+  "github.copilot.chat.claudeSonnet5Prompt.enabled": true,
+  "github.copilot.chat.gemini3GetChangedFilesTool.enabled": true,
+  "github.copilot.chat.gemini3LowReasoningEffort.enabled": true,
+  "github.copilot.chat.geminiFlashPromptAdditions.enabled": true,
+  "github.copilot.chat.githubMcpServer.enabled": true,
+  "github.copilot.chat.languageContext.typescript.includeDocumentation": true,
+  "github.copilot.chat.languageContext.typescript7.enabled": true,
+  "github.copilot.chat.newWorkspace.useContext7": true,
+  "github.copilot.chat.notebook.enhancedNextEditSuggestions.enabled": true,
+  "github.copilot.chat.notebook.followCellExecution.enabled": true,
+  "github.copilot.chat.responsesApi.promptCacheBreakpoint.enabled": true,
+  "github.copilot.chat.responsesApi.promptCacheKey.enabled": true,
+  "github.copilot.chat.responsesApiContextManagement.enabled": true,
+  "github.copilot.chat.switchAgent.enabled": true,
+  "devinCliChat.agenteAtual": "auto",
+  "devinCliChat.skillsSelecionadas": ["skill-creator"],
+  "devinCliChat.modeloAtual": "opus",
+  "chat.editing.autoAcceptDelay": 10
+}

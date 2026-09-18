@@ -1,0 +1,21 @@
+{
+  "id": "no-evidence",
+  "version": "v1",
+  "harness": "http-api",
+  "description": "Sem evidência: não inventa, nega com DATA_NOT_AVAILABLE.",
+  "setup": { "documents": [] },
+  "steps": [
+    {
+      "as": "seller",
+      "message": "Qual é a taxa de seguro residencial do plano eval-inexistente-2929?",
+      "promptId": "knowledge-grounded-answer",
+      "contextType": "KNOWLEDGE",
+      "expect": {
+        "grounded": false,
+        "minSources": 0,
+        "mustContain": ["informação"],
+        "factsEmpty": true
+      }
+    }
+  ]
+}
